@@ -1,6 +1,7 @@
 package ranger.math;
 
 import static com.google.common.base.Preconditions.checkState;
+import static ox.util.Functions.sum;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -39,20 +40,24 @@ public class Matrix implements Cloneable {
     return ret;
   }
 
+  /**
+   * Returns a matrix of the given width consisting of copies of the column.
+   */
+  public static Matrix columns(Vector column, int width) {
+    Matrix ret = new Matrix();
+    for (int i = 0; i < width; i++) {
+      ret.addColumnVector(column);
+    }
+    return ret;
+  }
+
   public Matrix(Vector... rows) {
     for (Vector rowVector : rows) {
       this.rows.add(rowVector);
     }
   }
 
-  @Override
-  public Matrix clone() {
-    Matrix ret = new Matrix();
-    for (Vector row : rows) {
-      ret.addRowVector(row.clone());
-    }
-    return ret;
-  }
+
 
   /**
    * Add a row to this matrix.
@@ -67,11 +72,36 @@ public class Matrix implements Cloneable {
    * Add a column to this matrix.
    */
   public Matrix addColumnVector(Vector v) {
-    checkState(v.size() == height());
+    checkState(v.size() == height() || height() == 0);
+    if (height() == 0) {
+      for (int i = 0; i < v.size(); i++) {
+        rows.add(new Vector());
+      }
+    }
     for (int i = 0; i < height(); i++) {
       rows.get(i).addEntry(v.getEntry(i));
     }
     return this;
+  }
+
+  /**
+   * Returns the result of adding matrices.
+   */
+  public Matrix plus(Matrix that) {
+    checkState(this.height() == that.height() && this.width() == that.width());
+    Matrix ret = new Matrix();
+    for (int i = 0; i < height(); i++) {
+      ret.addRowVector(this.getRow(i).plus(that.getRow(i)));
+    }
+    return ret;
+  }
+
+  public Matrix scale(double d) {
+    Matrix ret = new Matrix();
+    for (int i = 0; i < height(); i++) {
+      ret.addRowVector(this.getRow(i).scale(d));
+    }
+    return ret;
   }
 
   /**
@@ -212,7 +242,9 @@ public class Matrix implements Cloneable {
     return rows.size();
   }
 
-  private final DecimalFormat df = new DecimalFormat("#.##");
+  public double frobeniusNorm() {
+    return Math.sqrt(sum(this.rows, rv -> rv.dot(rv)));
+  }
 
   /**
    * Attempt to switch row I with a row beneath it so as to put a non-zero entry at (I,J). Return false if this is not
@@ -249,6 +281,17 @@ public class Matrix implements Cloneable {
       rows.set(i, rows.get(i).plus(rows.get(pivotI).scale(-toEliminate)));
     }
   }
+
+  @Override
+  public Matrix clone() {
+    Matrix ret = new Matrix();
+    for (Vector row : rows) {
+      ret.addRowVector(row.clone());
+    }
+    return ret;
+  }
+
+  private final DecimalFormat df = new DecimalFormat("#.##");
 
   @Override
   public String toString() {

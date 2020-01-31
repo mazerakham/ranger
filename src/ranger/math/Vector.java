@@ -69,11 +69,31 @@ public class Vector implements Cloneable {
     return ret;
   }
 
+  /**
+   * Return the result of performing the subtraction (this vector) minus (that vector).
+   */
+  public Vector minus(Vector that) {
+    Vector ret = new Vector();
+    for (int i = 0; i < size(); i++) {
+      ret.addEntry(this.getEntry(i) - that.getEntry(i));
+    }
+    return ret;
+  }
+
   public double dot(Vector that) {
     checkState(this.size() == that.size(), String.format("this size: %d, that size: %d", this.size(), that.size()));
     double ret = 0;
     for (int i = 0; i < size(); i++) {
       ret += this.getEntry(i) * that.getEntry(i);
+    }
+    return ret;
+  }
+
+  public Vector otimes(Vector that) {
+    checkState(this.size() == that.size());
+    Vector ret = new Vector();
+    for (int i = 0; i < size(); i++) {
+      ret.addEntry(this.getEntry(i) * that.getEntry(i));
     }
     return ret;
   }
@@ -102,6 +122,10 @@ public class Vector implements Cloneable {
 
   public int size() {
     return entries.size();
+  }
+
+  public Matrix asColumnMatrix() {
+    return new Matrix().addColumnVector(this);
   }
 
   public Json toJson() {

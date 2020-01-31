@@ -48,11 +48,6 @@ public class RangerMath {
     return sum(numbers, n -> n) / numbers.size();
   }
 
-  /**
-   * x < 0 => 0
-   * 
-   * x > 0 => x.
-   */
   public static Vector relu(Vector vector) {
     Vector ret = new Vector();
     for (int i = 0; i < vector.size(); i++) {
@@ -63,5 +58,17 @@ public class RangerMath {
 
   public static double relu(double d) {
     return (d < 0) ? 0 : d;
+  }
+  
+  public static Vector heaviside(Vector vector) {
+    Vector ret = new Vector();
+    for (int i = 0; i < vector.size(); i++) {
+      ret.addEntry(heaviside(vector.getEntry(i)));
+    }
+    return ret;
+  }
+
+  public static double heaviside(double d) {
+    return d > 0.0 ? 1.0 : 0.0;
   }
 }

@@ -4,18 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import ranger.math.RangerMath;
+
 import ox.Log;
+import ranger.data.Batcher;
 import ranger.data.Dataset;
 import ranger.data.TrainTestSplit;
-import ranger.math.RangerMath;
 import ranger.math.Vector;
 import ranger.nn.NeuralNetwork;
+import ranger.nn.SGDTrainer;
 
 public class Notebook1 {
 
+  private static final int RANDOM_SEED = 42;
+
+  private static final double INPUT_NOISE = 0.2;
+  private static final double OUTPUT_NOISE = 0.2;
+
   private static final int NUM_DATAPOINTS = 10_000;
   private static final double TRAINING_RATIO = 0.95;
-  private static final int RANDOM_SEED = 42;
+
+  private static final int NUM_BATCHES = 1000;
+  private static final int BATCH_SIZE = 50;
+  private static final double LEARNING_RATE = 0.01;
 
   private Random random = new Random(RANDOM_SEED);
   private Dataset basicDataset;
@@ -55,7 +66,7 @@ public class Notebook1 {
   // Generate some xor datapoints with noise.
   public void experiment2() {
     Log.debug("Running experiment 2.");
-    basicDataset = Dataset.generateBasicDataset(NUM_DATAPOINTS, random);
+    basicDataset = Dataset.generateBasicDataset(NUM_DATAPOINTS, INPUT_NOISE, OUTPUT_NOISE, random);
     for (int i = 0; i < 5; i++) {
       Log.debug(basicDataset.get(i));
     }
@@ -80,7 +91,8 @@ public class Notebook1 {
   // Fit a 2-10-1 neural network to the training data.
   public void experiment4() {
     Log.debug("Running experiment 4.");
-    neuralNetwork = new NeuralNetwork(2, 10, 1).randomlyInitialize(random).fit(trainingDataset);
+    neuralNetwork = new NeuralNetwork(2, 8, 1).randomlyInitialize(random);
+    new SGDTrainer(new Batcher(trainingDataset, BATCH_SIZE), LEARNING_RATE, NUM_BATCHES).train(neuralNetwork);
     Log.debug(neuralNetwork);
   }
 
