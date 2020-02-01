@@ -1,0 +1,12 @@
+.root {
+  height: 100%;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+}
