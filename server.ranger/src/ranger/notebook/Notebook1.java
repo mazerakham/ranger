@@ -91,7 +91,7 @@ public class Notebook1 {
   // Fit a 2-10-1 neural network to the training data.
   public void experiment4() {
     Log.debug("Running experiment 4.");
-    neuralNetwork = new NeuralNetwork(2, 8, 1).randomlyInitialize(random);
+    neuralNetwork = new NeuralNetwork(2, 3, 1).randomlyInitialize(random);
     new SGDTrainer(new Batcher(trainingDataset, BATCH_SIZE), LEARNING_RATE, NUM_BATCHES).train(neuralNetwork);
     Log.debug(neuralNetwork);
   }
