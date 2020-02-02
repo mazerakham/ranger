@@ -1,0 +1,27 @@
+
+.Modal {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: 500px;
+  max-width: 90%;
+  height: 300px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.26);
+  position: fixed;
+  top: 20vh;
+  left: calc((100% - 500px) / 2);
+}
+
+.Modal .buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.Modal button {
+  max-width: 100px;
+  margin-left: 10px;
+  margin-right: 10px;
+}

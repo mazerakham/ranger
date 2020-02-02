@@ -1,0 +1,16 @@
+div.DataExplorationPage {
+  display: inline-block;
+  width: 550px;
+}
+
+.DataExplorationPage .buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.DataExplorationPage .buttons button {
+  margin-left: 5px;
+  margin-right: 5px;
+  flex-grow: 1;
+}

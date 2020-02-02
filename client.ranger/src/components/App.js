@@ -11,7 +11,7 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPage: "home"
+      currentPage: "dataExploration"
     };
   }
 
@@ -24,9 +24,9 @@ export default class App extends Component {
       case "test":
         return (<TestPageContainer />);
       case "home":
-        return (<HomePageContainer loadPage={this.loadPage} />);
+        return (<HomePageContainer app={this} />);
       case "dataExploration":
-        return (<DataExplorationPageContainer />);
+        return (<DataExplorationPageContainer app={this}/>);
       default:
         throw new Error("Unknown page: " + this.state.currentPage);
     }
