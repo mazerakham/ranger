@@ -13,11 +13,14 @@ export default class HomePageContainer extends Component {
     console.log("Home Page Container loading dataset");
     this.setState({loadingStatus:"LOADING"});
     this.loadingStatus = "LOADING";
-    setTimeout(() => {
-      console.log("Loading finished.");
-      this.setState({loadingStatus:"FINISHED"});
-    }, 5000);
+    setTimeout(this.finishLoadingDataset, 3000);
   };
+
+  finishLoadingDataset = () => {
+    console.log("Loading finished.");
+    this.setState({loadingStatus:"FINISHED"});
+    setTimeout(() => this.props.loadPage("dataExploration"), 1000);
+  }
 
   render() {
     return (
