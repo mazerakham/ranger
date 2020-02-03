@@ -1,0 +1,8 @@
+
+.NeuralNetworkPanel {
+  height: 500px;
+  width: 100%;
+  align-content: center;
+  outline: 2px solid black;
+  margin-top: 10px;
+}

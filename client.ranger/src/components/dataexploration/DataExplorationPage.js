@@ -7,7 +7,7 @@ import 'styles/DataExplorationPage.css';
 export default class DataExplorationPage extends Component {
   render() {
     return (
-      <div className="DataExplorationPage">
+      <div className="DataExploration Page">
         <h2>Data Exploration Page</h2>
         <div className="buttons">
           <button onClick={() => this.props.container.loadPage("home")}>Back to Home</button>

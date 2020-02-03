@@ -1,15 +1,10 @@
-div.DataExplorationPage {
-  display: inline-block;
-  width: 550px;
-}
-
-.DataExplorationPage .buttons {
+.DataExploration .buttons {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
 }
 
-.DataExplorationPage .buttons button {
+.DataExploration .buttons button {
   margin-left: 5px;
   margin-right: 5px;
   max-width: 130px;

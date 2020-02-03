@@ -10,3 +10,8 @@ body {
   margin: 0;
   padding: 0;
 }
+
+.Page {
+  display: inline-block;
+  width: 550px;
+}
