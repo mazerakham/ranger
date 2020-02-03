@@ -31,7 +31,7 @@ export default class DataExplorationPageContainer extends Component {
     this.setState({showingModal: 'none'});
     console.log("Submitting command to create new neural network with hidden layer size: " + hiddenLayerSize);
     const json = this.rangerClient.createNeuralNetwork(hiddenLayerSize);
-    this.setState({neuralNetwork, json});
+    this.setState({neuralNetwork: json});
   }
 
   hideModal = () => {
