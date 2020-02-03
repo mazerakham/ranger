@@ -3,10 +3,13 @@ import React, { Component } from 'react';
 import DataExplorationPage from './DataExplorationPage';
 import NewNeuralNetworkModalContainer from './NewNeuralNetworkModalContainer';
 
+import RangerClient from 'utils/RangerClient';
+
 export default class DataExplorationPageContainer extends Component {
 
   constructor(props) {
     super(props);
+    this.rangerClient = new RangerClient();
     this.state = {showingModal: 'none'};
   }
 
@@ -27,14 +30,8 @@ export default class DataExplorationPageContainer extends Component {
   submitCreateNeuralNetwork = (hiddenLayerSize) => {
     this.setState({showingModal: 'none'});
     console.log("Submitting command to create new neural network with hidden layer size: " + hiddenLayerSize);
-    fetch('http://localhost:3001/newNeuralNetwork', {
-      method: 'post',
-      body: JSON.stringify({hiddenLayerSize: hiddenLayerSize})
-    }).then(response => {
-      return response.json();
-    }).then(json => {
-      console.log(json);
-    });
+    const json = this.rangerClient.createNeuralNetwork(hiddenLayerSize);
+    this.setState({neuralNetwork, json});
   }
 
   hideModal = () => {

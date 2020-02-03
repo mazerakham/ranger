@@ -10,6 +10,8 @@ import java.util.function.BiFunction;
 
 import com.google.common.collect.Queues;
 
+import ox.Json;
+
 public class Matrix implements Cloneable {
 
   public ArrayList<Vector> rows = new ArrayList<>();
@@ -292,6 +294,10 @@ public class Matrix implements Cloneable {
   }
 
   private final DecimalFormat df = new DecimalFormat("#.##");
+
+  public Json toJson() {
+    return Json.array(rows, Vector::toJson);
+  }
 
   @Override
   public String toString() {

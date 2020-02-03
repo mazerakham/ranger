@@ -6,6 +6,7 @@ import java.util.Random;
 
 import ranger.math.RangerMath;
 
+import ox.Json;
 import ranger.math.Matrix;
 import ranger.math.Vector;
 
@@ -78,6 +79,19 @@ public class NeuralNetwork {
 
   public Vector estimate(Vector in) {
     return w2.multiply(RangerMath.relu(w1.multiply(in).plus(b1))).plus(b2);
+  }
+
+  public Json toJson() {
+    return Json.object()
+        .with("size", Json.object()
+            .with("inSize", inSize)
+            .with("hlSize", hlSize)
+            .with("outSize", outSize))
+        .with("layers", Json.object()
+            .with("w1", w1.toJson())
+            .with("b1", b1.toJson())
+            .with("w2", w2.toJson())
+            .with("b2", b2.toJson()));
   }
 
   @Override
