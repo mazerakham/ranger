@@ -13,7 +13,7 @@ import ranger.data.sets.Dataset;
 import ranger.data.sets.XOrDataset;
 import ranger.math.Vector;
 import ranger.nn.NeuralNetwork;
-import ranger.nn.SGDTrainer;
+import ranger.nn.train.SGDTrainer;
 
 public class Notebook1 {
 
