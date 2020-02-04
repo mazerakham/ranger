@@ -8,6 +8,8 @@ import com.google.common.collect.Sets;
 
 import ranger.math.RangerMath;
 
+import ranger.data.sets.Dataset;
+
 public class TrainTestSplit {
 
   private final Dataset dataset;

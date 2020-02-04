@@ -2,6 +2,8 @@ package ranger.data;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import ranger.data.sets.Dataset;
+
 /**
  * Converts a dataset into training batches.
  * 

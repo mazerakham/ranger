@@ -1,16 +1,13 @@
-package ranger.data;
+package ranger.data.sets;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
+import ranger.data.LabeledDatapoint;
 import ranger.math.Vector;
 
-public class Dataset {
+public class XOrDataset {
 
-  public List<LabeledDatapoint> labeledDatapoints = new ArrayList<>();
-
-  public static Dataset generateBasicDataset(int numExamples, double inputNoise, double outputNoise, Random random) {
+  public static Dataset generateXOrDataset(int numExamples, double inputNoise, double outputNoise, Random random) {
     Dataset ret = new Dataset();
     for (int i = 0; i < numExamples; i++) {
       ret.add(generateLabeledDataPoint(inputNoise, outputNoise, random));
@@ -28,16 +25,6 @@ public class Dataset {
     return new LabeledDatapoint(new Vector(x1, x2), new Vector(y1));
   }
 
-  public void add(LabeledDatapoint datapoint) {
-    labeledDatapoints.add(datapoint);
-  }
 
-  public LabeledDatapoint get(int i) {
-    return labeledDatapoints.get(i);
-  }
-
-  public int size() {
-    return labeledDatapoints.size();
-  }
 
 }

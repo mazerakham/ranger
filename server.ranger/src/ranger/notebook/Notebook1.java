@@ -8,8 +8,9 @@ import ranger.math.RangerMath;
 
 import ox.Log;
 import ranger.data.Batcher;
-import ranger.data.Dataset;
 import ranger.data.TrainTestSplit;
+import ranger.data.sets.Dataset;
+import ranger.data.sets.XOrDataset;
 import ranger.math.Vector;
 import ranger.nn.NeuralNetwork;
 import ranger.nn.SGDTrainer;
@@ -66,7 +67,7 @@ public class Notebook1 {
   // Generate some xor datapoints with noise.
   public void experiment2() {
     Log.debug("Running experiment 2.");
-    basicDataset = Dataset.generateBasicDataset(NUM_DATAPOINTS, INPUT_NOISE, OUTPUT_NOISE, random);
+    basicDataset = XOrDataset.generateXOrDataset(NUM_DATAPOINTS, INPUT_NOISE, OUTPUT_NOISE, random);
     for (int i = 0; i < 5; i++) {
       Log.debug(basicDataset.get(i));
     }

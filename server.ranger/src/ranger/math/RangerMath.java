@@ -41,6 +41,14 @@ public class RangerMath {
     return map(getRandomBagOfLongs(min, max, numResults, r), l -> l.intValue());
   }
 
+  public static Vector gaussianVector(int dimension, double stdDev, Random random) {
+    Vector ret = new Vector();
+    for (int i = 0; i < dimension; i++) {
+      ret.addEntry(random.nextGaussian());
+    }
+    return ret.scale(1.0 / Math.sqrt(dimension));
+  }
+
   /**
    * Average of a list.
    */
