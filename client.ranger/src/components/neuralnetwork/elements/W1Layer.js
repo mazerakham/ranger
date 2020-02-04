@@ -35,7 +35,7 @@ export default class W1Layer extends Component {
 
   fromInputCoordsToW1Coords = (inputX, inputY) => {
     return [
-
+      this.coords.x + (inputX - )
     ]
   }
 
