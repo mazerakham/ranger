@@ -18,7 +18,7 @@ export default class InputLayer extends Component {
   }
 }
 
-class InputLayerCoords {
+export class InputLayerCoords {
   constructor() {
     this.w = 1;
     this.h = 2;
@@ -32,4 +32,6 @@ class InputLayerCoords {
       h: 1
     }
   }
+
+  getNeuronCenter = n => [0.5, n+0.5];
 }

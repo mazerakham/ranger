@@ -17,7 +17,7 @@ export default class NeuralNetwork extends Component {
 
   render() {
     return (
-      <SVG className="NeuralNetwork" parentCoords={SVG.rootCoords()} coords={this.coords} root>
+      <SVG className="NeuralNetwork" parentCoords={SVG.rootCoords()} coords={this.coords}>
         <rect x="0" y="0" width={this.coords.w} height={this.coords.h} style={{fill:"none", strokeWidth:0.1, stroke:"rgb(256,0,0)"}} />
         <InputLayer coords={this.coords.inputLayerCoords} neuralNetwork={this.props.neuralNetwork} />
         <HiddenLayer coords={this.coords.hiddenLayerCoords} neuralNetwork={this.props.neuralNetwork} />
@@ -29,7 +29,7 @@ export default class NeuralNetwork extends Component {
   }
 }
 
-class NeuralNetworkCoords {
+export class NeuralNetworkCoords {
   constructor() {
     this.w = 10;
     this.h = 10;

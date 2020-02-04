@@ -21,7 +21,7 @@ export default class HiddenLayer extends Component {
   }
 }
 
-class HiddenLayerCoords {
+export class HiddenLayerCoords {
   constructor() {
     this.w = 1;
     this.h = 5;
