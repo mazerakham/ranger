@@ -34,5 +34,9 @@ export class HiddenLayerCoords {
       w: 1,
       h: 1
     }
+  };
+  
+  getNeuronCenter = (i) => {
+    return [0.5, i + 0.5];
   }
 }

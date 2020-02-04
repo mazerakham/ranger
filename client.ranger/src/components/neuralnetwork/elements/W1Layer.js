@@ -2,19 +2,11 @@ import React, { Component } from 'react';
 
 import SVG from 'components/meta/SVG';
 
-import { InputLayerCoords } from './InputLayer';
-import { HiddenLayerCoords } from './HiddenLayer';
-import { NeuralNetworkCoords } from './NeuralNetwork';
 import NeuronConnection from './NeuronConnection';
 
 export default class W1Layer extends Component {
   constructor(props) {
     super(props);
-    this.coords = new W1LayerCoords();
-    this.inputLayerCoords = new InputLayerCoords();
-    this.hiddenLayerCoords = new HiddenLayerCoords();
-    this.neuralNetworkCoords = new NeuralNetworkCoords();
-    this.myCoordsInParent = this.neuralNetworkCoords.w1LayerCoords;
   }
 
   renderConnections = () => {
@@ -24,35 +16,14 @@ export default class W1Layer extends Component {
   }
 
   renderConnection = (i,j) => {
-    return <NeuronConnection coords={computeConnectionCoords(i,j)} />
-  }
-
-  computeConnectionCoords = (i,j) => {
-    const [x1, y1] = fromInputCoordsToW1Coords(...this.inputLayerCoords.getNeuronCenter(i));
-    const [x2, y2] = fromHiddenCoordsToW1Coords(this.hiddenLayerCoords.getNeuronCenter(j));
-    return {x1: x1, y1: y1, x2: x2, y2: y2};
-  }
-
-  fromInputCoordsToW1Coords = (inputX, inputY) => {
-    return [
-      this.coords.x + (inputX - )
-    ]
+    return <NeuronConnection coords={this.props.connectionCoordinates(i,j)} key={11*i + 37*j} />
   }
 
   render() {
     return (
-      <SVG parentCoords={this.props.coords} coords={this.coords}>
+      <React.Fragment>
         {this.renderConnections()}
-      </SVG>
+      </React.Fragment>
     );
-  }
-}
-
-class W1LayerCoords {
-  constructor() {
-    this.x = 0;
-    this.y = 0;
-    this.w = 10;
-    this.h = 10;
   }
 }

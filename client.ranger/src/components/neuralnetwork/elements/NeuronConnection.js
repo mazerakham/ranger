@@ -8,6 +8,8 @@ export default class NeuronConnection extends Component {
           y1={this.props.coords.y1}
           x2={this.props.coords.x2}
           y2={this.props.coords.y2}
+          stroke="black"
+          strokeWidth="0.1"
       />
     )
   }

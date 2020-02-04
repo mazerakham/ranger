@@ -17,7 +17,7 @@ export default class OutputLayer extends Component {
   }
 }
 
-class OutputLayerCoords {
+export class OutputLayerCoords {
   constructor() {
     this.w = 1;
     this.h = 1;
@@ -30,5 +30,9 @@ class OutputLayerCoords {
       w: 1,
       h: 1
     }
+  }
+
+  getNeuronCenter = i => {
+    return [0.5, i + 0.5];
   }
 }
