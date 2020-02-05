@@ -6,23 +6,26 @@ export default class RangerClient {
     this.baseUrl = 'http://localhost:3001';
   }
 
-  createNeuralNetwork = async (hiddenLayerSize) => {
-    const response = await fetch(this.baseUrl + '/newNeuralNetwork', {
+  createNeuralNetwork = (hiddenLayerSize) => {
+    return fetch(this.baseUrl + '/newNeuralNetwork', {
       method: 'post',
       body: JSON.stringify({hiddenLayerSize: hiddenLayerSize})
-    });
-    const json = await response.json();
-    console.log(json);
-    return json;
+    }).then( response => response.json());
   }
 
-  getTrainingHistory = async () => {
-    const response = await fetch(this.baseUrl + '/trainingHistory', {
+  getTrainingHistory = () => {
+    return fetch(this.baseUrl + '/trainingHistory', {
       method: 'get'
+    }).then( response => response.json() );
+  }
+
+  getNeuralFunctionPlot = (neuralNetwork) => {
+    return fetch(this.baseUrl + '/neuralFunctionPlot', {
+      method: 'post',
+      body: JSON.stringify({neuralNetwork: neuralNetwork})
+    }).then( response => {
+      return response.json();
     });
-    const json = await response.json();
-    console.log(json);
-    return json;
   }
 
 }

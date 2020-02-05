@@ -42,7 +42,7 @@ export default class App extends Component {
       case "neuralNetwork":
         return (<NeuralNetworkPageContainer app={this} neuralNetwork={this.state.neuralNetwork}/>);
       case "trainingHistory":
-        return (<TrainingHistoryPageContainer app={this}/>);
+        return (<TrainingHistoryPageContainer app={this} />);
       default:
         throw new Error("Unknown page: " + this.state.currentPage);
     }

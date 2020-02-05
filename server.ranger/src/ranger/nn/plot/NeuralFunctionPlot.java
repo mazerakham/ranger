@@ -6,9 +6,9 @@ import ranger.nn.NeuralNetwork;
 
 public class NeuralFunctionPlot {
 
-  private static final int RESOLUTION = 100;
+  private static final int RESOLUTION = 50;
 
-  private final Window window = new Window(-1, 1, -1, 1);
+  private final Window window = new Window(0, 1, 0, 1);
   private double[][] plot = new double[RESOLUTION][RESOLUTION];
 
   public static NeuralFunctionPlot plot(NeuralNetwork neuralNetwork) {
@@ -16,7 +16,7 @@ public class NeuralFunctionPlot {
     for (int i = 0; i < RESOLUTION; i++) {
       for (int j = 0; j < RESOLUTION; j++) {
         Vector in = ret.window.getPoint(i, j, RESOLUTION);
-        ret.plot[i][j] = in.toScalar();
+        ret.plot[i][j] = neuralNetwork.estimate(in).toScalar();
       }
     }
     return ret;
@@ -39,7 +39,7 @@ public class NeuralFunctionPlot {
     public Vector getPoint(int i, int j, int resolution) {
       return new Vector(
           xMin + (xMax - xMin) * i / resolution,
-          yMin + (yMax - yMin) * i / resolution
+          yMin + (yMax - yMin) * j / resolution
           );
     }
   }

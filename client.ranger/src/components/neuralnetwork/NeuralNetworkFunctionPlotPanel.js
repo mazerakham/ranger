@@ -1,31 +1,36 @@
 import React, { Component } from 'react';
 
+import RangerClient from 'utils/RangerClient';
+
 export default class NeuralNetworkFunctionPlotPanel extends Component {
 
   constructor(props) {
     super(props);
-    console.log(this.plotly);
+    this.rangerClient = new RangerClient();
   }
 
   componentDidMount() {
-    let data = [
-      {
-        z: [
-          [10, 10.625, 12.5, 15.625, 20],
-          [5.625, 6.25, 8.125, 11.25, 15.625],
-          [2.5, 3.125, 5.0, 8.125, 12.5],
-          [0.625, 1.25, 3.125, 6.25, 10.625],
-          [0, 0.625, 2.5, 5.625, 10]
-        ],
-        type: 'contour'
-      }
-    ];
+    this.rangerClient.getNeuralFunctionPlot(this.props.neuralNetwork).then(plotData => {
+      console.log("NeuralFunctionPlotPanel got this plot data back:");
+      console.log(plotData.plot);
 
-    let layout = {
-      title: 'Basic Contour Plot'
-    }
+    });
+  }
 
-    Plotly.newPlot('myDiv', data, layout);
+  componentDidUpdate(prevProps) {
+    Plotly.newPlot(
+        'myDiv',
+        [{
+          z: this.props.plot,
+          type: 'contour',
+          colorscale: 'Jet',
+          dx: 0.4,
+          x0: -1,
+          dy: 0.4,
+          y0: -1
+        }],
+        {title: 'Basic Contour Plot'}
+    );
   }
 
   render() {
@@ -33,6 +38,6 @@ export default class NeuralNetworkFunctionPlotPanel extends Component {
       <div className="NeuralNetworkFunctionPlotPanel">
         <div id='myDiv'></div>
       </div>
-    )
+    );
   }
 }

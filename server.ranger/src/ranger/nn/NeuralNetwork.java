@@ -95,11 +95,13 @@ public class NeuralNetwork {
   }
 
   public static NeuralNetwork fromJson(Json json) {
-    NeuralNetwork ret = new NeuralNetwork(json.getInt("inSize"), json.getInt("hlSize"), json.getInt("outSize"));
-    ret.w1 = Matrix.fromJson(json.getJson("w1"));
-    ret.b1 = Vector.fromJson(json.getJson("b1"));
-    ret.w2 = Matrix.fromJson(json.getJson("w2"));
-    ret.b2 = Vector.fromJson(json.getJson("b2"));
+    Json size = json.getJson("size");
+    Json layers = json.getJson("layers");
+    NeuralNetwork ret = new NeuralNetwork(size.getInt("inSize"), size.getInt("hlSize"), size.getInt("outSize"));
+    ret.w1 = Matrix.fromJson(layers.getJson("w1"));
+    ret.b1 = Vector.fromJson(layers.getJson("b1"));
+    ret.w2 = Matrix.fromJson(layers.getJson("w2"));
+    ret.b2 = Vector.fromJson(layers.getJson("b2"));
     return ret;
   }
 
@@ -112,5 +114,15 @@ public class NeuralNetwork {
     sb.append("Second matrix:\n");
     sb.append(w2.toString());
     return sb.toString();
+  }
+
+  @Override
+  public NeuralNetwork clone() {
+    NeuralNetwork ret = new NeuralNetwork(this.inSize, this.hlSize, this.outSize);
+    ret.w1 = w1.clone();
+    ret.b1 = b1.clone();
+    ret.w2 = w2.clone();
+    ret.b2 = b2.clone();
+    return ret;
   }
 }

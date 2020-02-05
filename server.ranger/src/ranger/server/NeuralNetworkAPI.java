@@ -30,7 +30,7 @@ public class NeuralNetworkAPI extends Controller {
   };
 
   private final Handler trainingHistory = (request, response) -> {
-    Json ret = IO.from(new File("history1.json")).toJson();
+    Json ret = IO.from(new File("history2.json")).toJson();
     response.write(ret);
   };
 

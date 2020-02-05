@@ -8,7 +8,7 @@ public class TrainingEntry {
   private final NeuralNetwork neuralNetwork;
 
   public TrainingEntry(NeuralNetwork neuralNetwork) {
-    this.neuralNetwork = neuralNetwork;
+    this.neuralNetwork = neuralNetwork.clone();
   }
 
   public Json toJson() {

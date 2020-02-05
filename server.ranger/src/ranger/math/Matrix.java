@@ -1,7 +1,6 @@
 package ranger.math;
 
 import static com.google.common.base.Preconditions.checkState;
-import static ox.util.Functions.map;
 import static ox.util.Functions.sum;
 
 import java.text.DecimalFormat;
@@ -61,7 +60,11 @@ public class Matrix implements Cloneable {
   }
 
   public static Matrix fromJson(Json json) {
-    return new Matrix((Vector[]) map(json.asJsonArray(), Vector::fromJson).toArray());
+    Matrix ret = new Matrix();
+    json.asJsonArray().forEach(rowJson -> {
+      ret.addRowVector(Vector.fromJson(rowJson));
+    });
+    return ret;
   }
 
   /**

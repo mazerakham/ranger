@@ -37,9 +37,11 @@ public class SGDTrainer {
     for (int i = 0; i < numBatches; i++) {
       Batch batch = batcher.getBatch();
       NeuralNetworkGradient gradient = computeBatchGradient(neuralNetwork, batch);
-      if (i % (numBatches / 100) == 0) {
+      if (i % (numBatches / 20) == 0) {
         Log.debug("gradient sizes:");
         Log.debug(gradient + "\n");
+        Log.debug("neural network:");
+        Log.debug(neuralNetwork);
       }
       if (saveHistory) {
         history.addEntry(new TrainingEntry(neuralNetwork));
