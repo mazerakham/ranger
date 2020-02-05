@@ -1,6 +1,7 @@
 package ranger.math;
 
 import static com.google.common.base.Preconditions.checkState;
+import static ox.util.Utils.only;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,10 @@ public class Vector implements Cloneable {
     for (double entry : entries) {
       addEntry(entry);
     }
+  }
+
+  public static Vector fromJson(Json json) {
+    return new Vector(json.asDoubleArray());
   }
 
   /**
@@ -105,6 +110,13 @@ public class Vector implements Cloneable {
 
   public double magnitude() {
     return Math.sqrt(this.dot(this));
+  }
+
+  /**
+   * Convert a singleton vector to a scalar.
+   */
+  public double toScalar() {
+    return only(entries);
   }
 
   public Vector addEntry(double d) {

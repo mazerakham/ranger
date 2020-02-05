@@ -38,8 +38,8 @@ public class NeuralNetwork {
   public NeuralNetwork randomlyInitialize(Random r) {
     double std1 = Math.sqrt(2.0 / (inSize + hlSize));
     double std2 = Math.sqrt(2.0 / (outSize + hlSize));
-    w1 = Matrix.initializeFromFunction(hlSize, inSize, (i, j) -> std1 * r.nextGaussian());
-    w2 = Matrix.initializeFromFunction(outSize, hlSize, (i, j) -> std2 * r.nextGaussian());
+    w1 = Matrix.fromFunction(hlSize, inSize, (i, j) -> std1 * r.nextGaussian());
+    w2 = Matrix.fromFunction(outSize, hlSize, (i, j) -> std2 * r.nextGaussian());
     b1 = Vector.zeros(hlSize);
     b2 = Vector.zeros(outSize);
     return this;
@@ -92,6 +92,15 @@ public class NeuralNetwork {
             .with("b1", b1.toJson())
             .with("w2", w2.toJson())
             .with("b2", b2.toJson()));
+  }
+
+  public static NeuralNetwork fromJson(Json json) {
+    NeuralNetwork ret = new NeuralNetwork(json.getInt("inSize"), json.getInt("hlSize"), json.getInt("outSize"));
+    ret.w1 = Matrix.fromJson(json.getJson("w1"));
+    ret.b1 = Vector.fromJson(json.getJson("b1"));
+    ret.w2 = Matrix.fromJson(json.getJson("w2"));
+    ret.b2 = Vector.fromJson(json.getJson("b2"));
+    return ret;
   }
 
   @Override

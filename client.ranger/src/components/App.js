@@ -4,6 +4,7 @@ import TestPageContainer from 'components/test/TestPageContainer';
 import HomePageContainer from 'components/home/HomePageContainer';
 import DataExplorationPageContainer from 'components/dataexploration/DataExplorationPageContainer';
 import NeuralNetworkPageContainer from 'components/neuralnetwork/NeuralNetworkPageContainer';
+import TrainingHistoryPageContainer from 'components/traininghistory/TrainingHistoryPageContainer';
 
 import 'styles/App.css';
 
@@ -14,7 +15,7 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPage: "neuralNetwork",
+      currentPage: "trainingHistory",
       neuralNetwork: new RangerClient().createNeuralNetwork(5)
     };
   }
@@ -40,6 +41,8 @@ export default class App extends Component {
         return (<DataExplorationPageContainer app={this}/>);
       case "neuralNetwork":
         return (<NeuralNetworkPageContainer app={this} neuralNetwork={this.state.neuralNetwork}/>);
+      case "trainingHistory":
+        return (<TrainingHistoryPageContainer app={this}/>);
       default:
         throw new Error("Unknown page: " + this.state.currentPage);
     }
