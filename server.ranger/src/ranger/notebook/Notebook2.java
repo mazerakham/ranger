@@ -9,7 +9,7 @@ import ranger.data.TrainTestSplit;
 import ranger.data.sets.Dataset;
 import ranger.data.sets.XOrDataset;
 import ranger.nn.Evaluator;
-import ranger.nn.NeuralNetwork;
+import ranger.nn.SingleLayerNeuralNetwork;
 import ranger.nn.train.SGDTrainer;
 import ranger.nn.train.TrainingHistory;
 
@@ -47,7 +47,7 @@ public class Notebook2 {
     Dataset trainingSet = splitter.trainingSet;
     Dataset testSet = splitter.testSet;
 
-    NeuralNetwork neuralNetwork = new NeuralNetwork(2, HIDDEN_LAYER_SIZE, 1).randomlyInitialize(random);
+    SingleLayerNeuralNetwork neuralNetwork = new SingleLayerNeuralNetwork(2, HIDDEN_LAYER_SIZE, 1).randomlyInitialize(random);
 
     Batcher batcher = new Batcher(trainingSet, BATCH_SIZE);
     SGDTrainer trainer = new SGDTrainer(batcher, LEARNING_RATE, NUM_BATCHES).saveHistory();

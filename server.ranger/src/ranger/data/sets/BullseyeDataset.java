@@ -13,6 +13,10 @@ public class BullseyeDataset {
   private static final double INNER_BAND = 0.33;
   private static final double OUTER_BAND = 0.67;
 
+  public static Dataset generateDefaultBullseyeDataset() {
+    return generateBullseyeDataset(10_000, 0.04, 0.06, new Random());
+  }
+
   public static Dataset generateBullseyeDataset(int numExamples, double inputNoise, double outputNoise, Random random) {
     Dataset ret = new Dataset();
     for (int i = 0; i < numExamples; i++) {

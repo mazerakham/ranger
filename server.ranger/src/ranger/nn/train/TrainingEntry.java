@@ -1,13 +1,13 @@
 package ranger.nn.train;
 
 import ox.Json;
-import ranger.nn.NeuralNetwork;
+import ranger.nn.SingleLayerNeuralNetwork;
 
 public class TrainingEntry {
 
-  private final NeuralNetwork neuralNetwork;
+  private final SingleLayerNeuralNetwork neuralNetwork;
 
-  public TrainingEntry(NeuralNetwork neuralNetwork) {
+  public TrainingEntry(SingleLayerNeuralNetwork neuralNetwork) {
     this.neuralNetwork = neuralNetwork.clone();
   }
 

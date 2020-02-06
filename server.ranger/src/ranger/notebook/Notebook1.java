@@ -12,7 +12,7 @@ import ranger.data.TrainTestSplit;
 import ranger.data.sets.Dataset;
 import ranger.data.sets.XOrDataset;
 import ranger.math.Vector;
-import ranger.nn.NeuralNetwork;
+import ranger.nn.SingleLayerNeuralNetwork;
 import ranger.nn.train.SGDTrainer;
 
 public class Notebook1 {
@@ -34,7 +34,7 @@ public class Notebook1 {
   private Dataset trainingDataset;
   private Dataset testDataset;
 
-  private NeuralNetwork neuralNetwork;
+  private SingleLayerNeuralNetwork neuralNetwork;
 
   public static void main(String... args) {
     new Notebook1().run();
@@ -92,7 +92,7 @@ public class Notebook1 {
   // Fit a 2-10-1 neural network to the training data.
   public void experiment4() {
     Log.debug("Running experiment 4.");
-    neuralNetwork = new NeuralNetwork(2, 3, 1).randomlyInitialize(random);
+    neuralNetwork = new SingleLayerNeuralNetwork(2, 3, 1).randomlyInitialize(random);
     new SGDTrainer(new Batcher(trainingDataset, BATCH_SIZE), LEARNING_RATE, NUM_BATCHES).train(neuralNetwork);
     Log.debug(neuralNetwork);
   }

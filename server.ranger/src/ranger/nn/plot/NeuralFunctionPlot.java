@@ -2,7 +2,7 @@ package ranger.nn.plot;
 
 import ox.Json;
 import ranger.math.Vector;
-import ranger.nn.NeuralNetwork;
+import ranger.nn.SingleLayerNeuralNetwork;
 
 public class NeuralFunctionPlot {
 
@@ -11,7 +11,7 @@ public class NeuralFunctionPlot {
   private final Window window = new Window(0, 1, 0, 1);
   private double[][] plot = new double[RESOLUTION][RESOLUTION];
 
-  public static NeuralFunctionPlot plot(NeuralNetwork neuralNetwork) {
+  public static NeuralFunctionPlot plot(SingleLayerNeuralNetwork neuralNetwork) {
     NeuralFunctionPlot ret = new NeuralFunctionPlot();
     for (int i = 0; i < RESOLUTION; i++) {
       for (int j = 0; j < RESOLUTION; j++) {

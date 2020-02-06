@@ -17,8 +17,13 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPage: "home",
-      neuralNetwork: new RangerClient().createNeuralNetwork(5)
+      currentPage: "session",
+      sessionOptions: {
+        datasetType: 'xor',
+        modelType: 'plain',
+        numLayers: 2,
+        layerSizes: [3,5]
+      }
     };
   }
 

@@ -1,12 +1,27 @@
 import React, { Component } from 'react';
 
-export default class SessionPageContainer extends Component {
+import ControlSectionContainer from  './elements/ControlSectionContainer';
+import NeuralFunctionPlotContainer from  './elements/NeuralFunctionPlotContainer';
+import NeuralNetworkPanel from  './elements/NeuralNetworkPanel';
+import DesiredFunctionPlotContainer from  './elements/DesiredFunctionPlotContainer';
+
+
+import './Session.css';
+
+export default class SessionPage extends Component {
 
   render() {
     return (
-      <div>
+      <div className="Session Container">
         <h1>Session</h1>
-        <p>We left off here.  Make a test that allows you to jump straight here.  Options are stored in this.props.sessionOptions.</p>
+        <div className="Session Row">
+          <ControlSectionContainer />
+          <NeuralFunctionPlotContainer />
+        </div>
+        <div className="Session Row">
+          <NeuralNetworkPanel />
+          <DesiredFunctionPlotContainer />
+        </div>
       </div>
     )
   }

@@ -14,7 +14,7 @@ import ranger.math.Vector;
  * Represents a neural network (a,b,c) with input vectors of size a, a ReLU hidden layer of size b, and an output of
  * size c.
  */
-public class NeuralNetwork {
+public class SingleLayerNeuralNetwork {
 
   public int inSize;
   public int hlSize;
@@ -26,7 +26,7 @@ public class NeuralNetwork {
   private Matrix w2;
   private Vector b2; // output layer.
 
-  public NeuralNetwork(int in, int hl, int out) {
+  public SingleLayerNeuralNetwork(int in, int hl, int out) {
     this.inSize = in;
     this.hlSize = hl;
     this.outSize = out;
@@ -35,7 +35,7 @@ public class NeuralNetwork {
   /**
    * Xavier initialization.
    */
-  public NeuralNetwork randomlyInitialize(Random r) {
+  public SingleLayerNeuralNetwork randomlyInitialize(Random r) {
     double std1 = Math.sqrt(2.0 / (inSize + hlSize));
     double std2 = Math.sqrt(2.0 / (outSize + hlSize));
     w1 = Matrix.fromFunction(hlSize, inSize, (i, j) -> std1 * r.nextGaussian());
@@ -94,10 +94,10 @@ public class NeuralNetwork {
             .with("b2", b2.toJson()));
   }
 
-  public static NeuralNetwork fromJson(Json json) {
+  public static SingleLayerNeuralNetwork fromJson(Json json) {
     Json size = json.getJson("size");
     Json layers = json.getJson("layers");
-    NeuralNetwork ret = new NeuralNetwork(size.getInt("inSize"), size.getInt("hlSize"), size.getInt("outSize"));
+    SingleLayerNeuralNetwork ret = new SingleLayerNeuralNetwork(size.getInt("inSize"), size.getInt("hlSize"), size.getInt("outSize"));
     ret.w1 = Matrix.fromJson(layers.getJson("w1"));
     ret.b1 = Vector.fromJson(layers.getJson("b1"));
     ret.w2 = Matrix.fromJson(layers.getJson("w2"));
@@ -117,8 +117,8 @@ public class NeuralNetwork {
   }
 
   @Override
-  public NeuralNetwork clone() {
-    NeuralNetwork ret = new NeuralNetwork(this.inSize, this.hlSize, this.outSize);
+  public SingleLayerNeuralNetwork clone() {
+    SingleLayerNeuralNetwork ret = new SingleLayerNeuralNetwork(this.inSize, this.hlSize, this.outSize);
     ret.w1 = w1.clone();
     ret.b1 = b1.clone();
     ret.w2 = w2.clone();

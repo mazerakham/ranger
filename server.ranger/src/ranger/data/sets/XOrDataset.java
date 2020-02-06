@@ -7,6 +7,10 @@ import ranger.math.Vector;
 
 public class XOrDataset {
 
+  public static Dataset generateDefaultXOrDataset() {
+    return generateXOrDataset(10_000, 0.04, 0.06, new Random());
+  }
+
   public static Dataset generateXOrDataset(int numExamples, double inputNoise, double outputNoise, Random random) {
     Dataset ret = new Dataset();
     for (int i = 0; i < numExamples; i++) {

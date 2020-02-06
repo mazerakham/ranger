@@ -1,4 +1,4 @@
-package ranger.server;
+package ranger.server.api;
 
 import java.io.File;
 import java.util.Random;
@@ -7,7 +7,7 @@ import bowser.Controller;
 import bowser.Handler;
 import ox.IO;
 import ox.Json;
-import ranger.nn.NeuralNetwork;
+import ranger.nn.SingleLayerNeuralNetwork;
 import ranger.nn.plot.NeuralFunctionPlot;
 import ranger.server.service.NeuralNetworkService;
 
@@ -25,7 +25,7 @@ public class NeuralNetworkAPI extends Controller {
   private final Handler newNeuralNetwork = (request, response) -> {
     Json json = request.getJson();
     int hlSize = json.getInt("hiddenLayerSize");
-    NeuralNetwork neuralNetwork = new NeuralNetwork(2, hlSize, 1).randomlyInitialize(new Random());
+    SingleLayerNeuralNetwork neuralNetwork = new SingleLayerNeuralNetwork(2, hlSize, 1).randomlyInitialize(new Random());
     response.write(Json.object().with("neuralNetwork", neuralNetwork.toJson()));
   };
 
@@ -36,7 +36,7 @@ public class NeuralNetworkAPI extends Controller {
 
   private final Handler neuralFunctionPlot = (request, response) -> {
     Json json = request.getJson();
-    NeuralNetwork neuralNetwork = NeuralNetwork.fromJson(json.getJson("neuralNetwork"));
+    SingleLayerNeuralNetwork neuralNetwork = SingleLayerNeuralNetwork.fromJson(json.getJson("neuralNetwork"));
     NeuralFunctionPlot plot = NeuralFunctionPlot.plot(neuralNetwork);
     response.write(Json.object().with("plot", plot.toJson()));
   };

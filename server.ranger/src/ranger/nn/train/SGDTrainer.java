@@ -6,7 +6,7 @@ import ox.Log;
 import ranger.data.Batch;
 import ranger.data.Batcher;
 import ranger.math.Vector;
-import ranger.nn.NeuralNetwork;
+import ranger.nn.SingleLayerNeuralNetwork;
 import ranger.nn.NeuralNetworkGradient;
 
 public class SGDTrainer {
@@ -33,7 +33,7 @@ public class SGDTrainer {
     return this.history;
   }
 
-  public void train(NeuralNetwork neuralNetwork) {
+  public void train(SingleLayerNeuralNetwork neuralNetwork) {
     for (int i = 0; i < numBatches; i++) {
       Batch batch = batcher.getBatch();
       NeuralNetworkGradient gradient = computeBatchGradient(neuralNetwork, batch);
@@ -50,7 +50,7 @@ public class SGDTrainer {
     }
   }
 
-  private NeuralNetworkGradient computeBatchGradient(NeuralNetwork neuralNetwork, Batch batch) {
+  private NeuralNetworkGradient computeBatchGradient(SingleLayerNeuralNetwork neuralNetwork, Batch batch) {
     NeuralNetworkGradient gradient = new NeuralNetworkGradient(neuralNetwork);
     for (int i = 0; i < batch.size(); i++) {
       Vector datapoint = batch.getDatapoint(i);

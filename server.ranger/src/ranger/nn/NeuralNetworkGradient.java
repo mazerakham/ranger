@@ -11,7 +11,7 @@ public class NeuralNetworkGradient {
   /**
    * Initializes a gradient at zero of a size compatible with the neural network's weights.
    */
-  public NeuralNetworkGradient(NeuralNetwork nn) {
+  public NeuralNetworkGradient(SingleLayerNeuralNetwork nn) {
     grad_w1 = Matrix.zeros(nn.hlSize, nn.inSize);
     grad_b1 = Vector.zeros(nn.hlSize);
     grad_w2 = Matrix.zeros(nn.outSize, nn.hlSize);

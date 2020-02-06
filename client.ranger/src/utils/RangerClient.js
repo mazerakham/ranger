@@ -28,4 +28,13 @@ export default class RangerClient {
     });
   }
 
+  createSession = (sessionOptions) => {
+    return fetch(this.baseUrl + '/createSession', {
+      method: 'post',
+      body: JSON.stringify({sessionOptions: sessionOptions})
+    }).then ( response => {
+      return response.json();
+    });
+  }
+
 }

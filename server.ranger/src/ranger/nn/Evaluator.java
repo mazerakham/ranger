@@ -11,7 +11,7 @@ import ranger.math.Vector;
 
 public class Evaluator {
 
-  public void evaluate(NeuralNetwork neuralNetwork, Dataset testDataset) {
+  public void evaluate(SingleLayerNeuralNetwork neuralNetwork, Dataset testDataset) {
     List<Double> errors = new ArrayList<>();
     for (int i = 0; i < testDataset.size(); i++) {
       Vector prediction = neuralNetwork.estimate(testDataset.get(i).datapoint);
