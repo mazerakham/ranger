@@ -9,17 +9,13 @@ export default class HomePageContainer extends Component {
     this.state = {loadingStatus: "NONE"};
   }
 
-  loadDataset = () => {
-    console.log("Home Page Container loading dataset");
-    this.setState({loadingStatus:"LOADING"});
-    this.loadingStatus = "LOADING";
-    setTimeout(this.finishLoadingDataset, 250);
-  };
+  startNewSession = () => {
+    console.log("Starting new session.");
+    this.props.app.loadPage("newSession");
+  }
 
-  finishLoadingDataset = () => {
-    console.log("Loading finished.");
-    this.setState({loadingStatus:"FINISHED"});
-    setTimeout(() => this.props.app.loadPage("dataExploration"), 250);
+  loadSession = () => {
+    console.log("Loading a saved session is not yet supported.");
   }
 
   render() {

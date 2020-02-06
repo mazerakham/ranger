@@ -6,12 +6,13 @@ import "styles/HomePage.css";
 
 export default class HomePage extends Component {
 
+
   render() {
     return (
       <div>
-        <h2>Ranger Client Homepage!</h2>
-        <button onClick={this.props.container.loadDataset}>Load Dataset</button>
-        <LoadingText loadingStatus={this.props.loadingStatus} />
+        <h2>Ranger Client Home</h2>
+        <button onClick={this.props.container.startNewSession}>Start New Session</button>
+      <button onClick={this.props.container.loadSession}>Load Saved Session</button>
       </div>
     );
   }

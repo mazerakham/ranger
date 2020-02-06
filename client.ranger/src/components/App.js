@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import TestPageContainer from 'components/test/TestPageContainer';
 import HomePageContainer from 'components/home/HomePageContainer';
 import DataExplorationPageContainer from 'components/dataexploration/DataExplorationPageContainer';
+import NewSessionContainer from 'components/newsession/NewSessionContainer';
 import NeuralNetworkPageContainer from 'components/neuralnetwork/NeuralNetworkPageContainer';
 import TrainingHistoryPageContainer from 'components/traininghistory/TrainingHistoryPageContainer';
 
@@ -15,7 +16,7 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPage: "trainingHistory",
+      currentPage: "home",
       neuralNetwork: new RangerClient().createNeuralNetwork(5)
     };
   }
@@ -39,6 +40,8 @@ export default class App extends Component {
         return (<HomePageContainer app={this} />);
       case "dataExploration":
         return (<DataExplorationPageContainer app={this}/>);
+      case "newSession":
+        return (<NewSessionContainer app={this}/>);
       case "neuralNetwork":
         return (<NeuralNetworkPageContainer app={this} neuralNetwork={this.state.neuralNetwork}/>);
       case "trainingHistory":
