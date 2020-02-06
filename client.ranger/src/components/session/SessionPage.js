@@ -19,7 +19,7 @@ export default class SessionPage extends Component {
           <NeuralFunctionPlotContainer />
         </div>
         <div className="Session Row">
-          <NeuralNetworkPanel />
+          <NeuralNetworkPanel neuralNetwork={this.props.neuralNetwork} />
           <DesiredFunctionPlotContainer />
         </div>
       </div>

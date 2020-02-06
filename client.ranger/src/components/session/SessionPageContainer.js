@@ -19,7 +19,9 @@ export default class SessionPageContainer extends Component {
       console.log("Received response json:");
       console.log(json);
       this.setState({
-        stage: "finished"
+        stage: "finished",
+        neuralNetwork: json.neuralNetwork,
+        session: json.session
       });
     })
   }
@@ -30,7 +32,12 @@ export default class SessionPageContainer extends Component {
       case "loading":
         return ( <div><h1>Creating Session.</h1></div>);
       case "finished":
-        return ( <SessionPage sessionOptions={this.props.sessionOptions} /> )
+        return ( 
+          <SessionPage 
+              sessionOptions={this.props.sessionOptions}
+              neuralNetwork={this.state.neuralNetwork}
+          /> 
+        )
       default:
         throw new Error("Did not recognize stage " + this.state.stage);
     }

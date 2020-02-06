@@ -2,6 +2,8 @@ package ranger.server.api;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.Random;
+
 import bowser.Controller;
 import bowser.Handler;
 import ox.Json;
@@ -29,6 +31,7 @@ public class SessionAPI extends Controller {
   private final Handler createSession = (request, response) -> {
     // Parse request.
     Json json = request.getJson();
+    Log.debug(json.getJson("sessionOptions"));
     SessionOptions sessionOptions = SessionOptions.fromJson(json.getJson("sessionOptions"));
     Log.debug(sessionOptions);
 
@@ -39,17 +42,19 @@ public class SessionAPI extends Controller {
     datasetHandleDB.insert(datasetHandle);
 
     // Make randomly initialized neural network.
-    checkState(json.get("modelType").equals("plain"),
+    checkState(json.getJson("sessionOptions").get("modelType").equals("plain"),
         "Ranger API only supports plain neural network sessions for now.");
     PlainNeuralNetworkSpecs specs = sessionOptions.neuralNetworkSpecs;
-    PlainNeuralNetwork neuralNetwork = new PlainNeuralNetwork(specs).initialize();
+    PlainNeuralNetwork neuralNetwork = new PlainNeuralNetwork(specs).initialize(new Random());
 
     // Make session.
     Session session = new Session(datasetHandle.id);
     sessionDB.insert(session);
 
     // Send session (for ID) and neural network.
-    response.write(Json.object().with("session", session.toJson()));
+    response.write(Json.object()
+        .with("session", session.toJson())
+        .with("neuralNetwork", neuralNetwork.toJson()));
   };
 
 }

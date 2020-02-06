@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
-import { render } from 'react-dom';
+
+import PlainNeuralNetworkContainer from 'components/neuralnetwork/plainneuralnetwork/PlainNeuralNetworkContainer';
 
 export default class NeuralNetworkPanel extends Component {
 
   render() {
     return (
       <div className="Session Panel">
-        NeuralNetworkPanel
+        <div>Plain Neural Network.</div>
+        <div>
+          <PlainNeuralNetworkContainer neuralNetwork={this.props.neuralNetwork} />
+        </div>
       </div>
     )
   }

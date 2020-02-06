@@ -12,11 +12,11 @@ public class PlainNeuralNetworkSpecs {
 
   public final int numLayers;
 
-  public final List<Integer> sizes;
+  public final List<Integer> layerSizes;
 
   public static PlainNeuralNetworkSpecs fromJson(Json json, int inSize, int outSize) {
     int numLayers = json.getInt("numHiddenLayers") + 2; // input and output are counted as layers.
-    List<Integer> sizes = Lists.newArrayList(json.getJson("sizes").asIntArray());
+    List<Integer> sizes = Lists.newArrayList(json.getJson("layerSizes").asIntArray());
     sizes.add(0, inSize);
     sizes.add(outSize);
     checkState(sizes.size() == numLayers);
@@ -25,6 +25,12 @@ public class PlainNeuralNetworkSpecs {
 
   public PlainNeuralNetworkSpecs(int numLayers, List<Integer> sizes) {
     this.numLayers = numLayers;
-    this.sizes = sizes;
+    this.layerSizes = sizes;
+  }
+
+  public Json toJson() {
+    return Json.object()
+        .with("numLayers", numLayers)
+        .with("layerSizes", Json.array(layerSizes));
   }
 }

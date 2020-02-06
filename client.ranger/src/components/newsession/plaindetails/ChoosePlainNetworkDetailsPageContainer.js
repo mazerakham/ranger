@@ -7,7 +7,7 @@ export default class ChoosePlainNetworkDetailsPageContainer extends Component {
   constructor(props){
     super(props);
     this.state = {
-      numLayers: "none",
+      numHiddenLayers: "none",
       layerSizes: []
     }
   }
@@ -16,7 +16,7 @@ export default class ChoosePlainNetworkDetailsPageContainer extends Component {
 
   onNumLayersChange = (event) => {
     this.setState({
-      numLayers: event.target.value,
+      numHiddenLayers: event.target.value,
       layerSizes: this.range(event.target.value).map(i => "")
     });
 
@@ -25,7 +25,7 @@ export default class ChoosePlainNetworkDetailsPageContainer extends Component {
   onLayerSizeChange = (i) => {
     return (event) => {
       let newLayerSizes = [...this.state.layerSizes];
-      newLayerSizes[i] = event.target.value;
+      newLayerSizes[i] = parseInt(event.target.value);
       this.setState({layerSizes: newLayerSizes});
     }
   }

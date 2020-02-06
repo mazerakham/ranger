@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-import NeuralNetworkPanel from 'components/neuralnetwork/NeuralNetworkPanel';
-import NeuralNetworkFunctionPlotPanel from 'components/neuralnetwork/NeuralNetworkFunctionPlotPanel';
+import NeuralNetworkPanel from 'components/neuralnetwork/onelayerneuralnetwork/NeuralNetworkPanel';
+import NeuralNetworkFunctionPlotPanel from 'components/neuralnetwork/onelayerneuralnetwork/NeuralNetworkFunctionPlotPanel';
 
 import 'styles/TrainingHistory.css'
 

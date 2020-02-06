@@ -11,6 +11,8 @@ public class Session extends AbstractModel {
   }
 
   public Json toJson() {
-    return Json.object().with("datasetHandleId", datasetHandleId);
+    return Json.object()
+        .with("id", id)
+        .with("datasetHandleId", datasetHandleId);
   }
 }
