@@ -31,6 +31,14 @@ export default class NewSessionContainer extends Component {
     }
   }
 
+  selectNetworkDetails = (networkDetails) => {
+    this.setState({
+      ...networkDetails
+    });
+    let allOptions = {...this.state, ...networkDetails};
+    this.props.app.startNewSession(allOptions);
+  }
+
   render() {
     switch (this.state.stage) {
       case 'dataset':
@@ -38,7 +46,7 @@ export default class NewSessionContainer extends Component {
       case 'model':
         return ( <ChooseModelPageContainer selectModel={this.selectModel} />);
       case 'plainDetails':
-        return ( <ChoosePlainNetworkDetailsPageContainer selectNetworkDetails={this.selectNetworkDetails} /> );
+        return ( <ChoosePlainNetworkDetailsPageContainer submitNetworkDetails={this.selectNetworkDetails} /> );
       default:
         throw new Error('Unknown page: ' + this.state.stage);
     }

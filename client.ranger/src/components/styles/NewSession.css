@@ -24,3 +24,13 @@ div.choice.left:hover {
 div.choice.right:hover {
   background-color: rgba(255,0,0,0.1);
 }
+
+div.layer-size {
+  margin-top:10px;
+  margin-bottom:10px;
+}
+
+button {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

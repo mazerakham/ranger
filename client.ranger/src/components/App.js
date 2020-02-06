@@ -4,6 +4,7 @@ import TestPageContainer from 'components/test/TestPageContainer';
 import HomePageContainer from 'components/home/HomePageContainer';
 import DataExplorationPageContainer from 'components/dataexploration/DataExplorationPageContainer';
 import NewSessionContainer from 'components/newsession/NewSessionContainer';
+import SessionPageContainer from 'components/session/SessionPageContainer';
 import NeuralNetworkPageContainer from 'components/neuralnetwork/NeuralNetworkPageContainer';
 import TrainingHistoryPageContainer from 'components/traininghistory/TrainingHistoryPageContainer';
 
@@ -32,6 +33,13 @@ export default class App extends Component {
     });
   }
 
+  startNewSession = (sessionOptions) => {
+    this.setState({
+      sessionOptions: sessionOptions,
+      currentPage: "session"
+    })
+  }
+
   renderCurrentPage = () => {
     switch (this.state.currentPage) {
       case "test":
@@ -42,6 +50,8 @@ export default class App extends Component {
         return (<DataExplorationPageContainer app={this}/>);
       case "newSession":
         return (<NewSessionContainer app={this}/>);
+      case "session":
+        return (<SessionPageContainer app={this} sessionOptions={this.state.sessionOptions} />);
       case "neuralNetwork":
         return (<NeuralNetworkPageContainer app={this} neuralNetwork={this.state.neuralNetwork}/>);
       case "trainingHistory":
