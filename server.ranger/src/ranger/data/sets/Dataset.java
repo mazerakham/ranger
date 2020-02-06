@@ -44,6 +44,13 @@ public class Dataset {
   }
 
   public static enum DatasetType {
-    XOR, BULLSEYE;
+    XOR(2, 1), BULLSEYE(2, 1);
+
+    public final int inSize, outSize;
+
+    private DatasetType(int inSize, int outSize) {
+      this.inSize = inSize;
+      this.outSize = outSize;
+    }
   }
 }

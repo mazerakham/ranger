@@ -4,9 +4,9 @@ import ox.Json;
 
 public class Session extends AbstractModel {
 
-  public int datasetHandleId;
+  public long datasetHandleId;
 
-  public Session(int datasetHandleId) {
+  public Session(long datasetHandleId) {
     this.datasetHandleId = datasetHandleId;
   }
 

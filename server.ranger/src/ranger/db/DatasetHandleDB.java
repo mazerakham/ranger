@@ -11,7 +11,7 @@ public class DatasetHandleDB extends RangerDB<DatasetHandle> {
   protected Table getTable() {
     return new Table("dataset_handle")
         .idColumn()
-        .column("fileUUID", UUID.class);
+        .column("datasetFileId", UUID.class);
   }
 
 }

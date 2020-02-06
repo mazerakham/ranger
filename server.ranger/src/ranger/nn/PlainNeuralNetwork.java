@@ -1,23 +1,32 @@
 package ranger.nn;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+
+import ranger.arch.PlainNeuralNetworkSpecs;
+import ranger.math.Matrix;
+import ranger.math.Vector;
 
 public class PlainNeuralNetwork {
 
   /**
    * Includes input layer and output layer.
    */
-  private final int numLayers;
+  public final PlainNeuralNetworkSpecs specs;
 
-  private final ImmutableList<Integer> sizes;
+  private final List<Matrix> W;
 
-  public PlainNeuralNetwork(int numLayers, List<Integer> sizes) {
-    checkState(numLayers == sizes.size());
-    this.numLayers = numLayers;
-    this.sizes = ImmutableList.copyOf(sizes);
+  private final List<Vector> b;
+
+  public PlainNeuralNetwork(PlainNeuralNetworkSpecs specs) {
+    this.specs = specs;
+    this.W = Lists.newArrayListWithCapacity(specs.numLayers - 1);
+    this.b = Lists.newArrayListWithCapacity(specs.numLayers - 1);
   }
+
+  public PlainNeuralNetwork initialize() {
+    throw new UnsupportedOperationException();
+  }
+
 }
