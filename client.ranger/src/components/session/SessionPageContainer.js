@@ -16,13 +16,21 @@ export default class SessionPageContainer extends Component {
 
   componentDidMount() {
     this.rangerClient.createSession(this.props.sessionOptions).then(json => {
-      console.log("Received response json:");
+      console.log("createSession() received response json:");
       console.log(json);
       this.setState({
         stage: "finished",
         neuralNetwork: json.neuralNetwork,
-        session: json.session
+        session: json.session,
+        trainingStep: 0
       });
+      this.rangerClient.getNeuralFunctionPlot(session, 0).then(json2 => {
+        console.log("getNeuralFunctionPlot() received response json:");
+        console.log(json);
+        this.setState({
+          plot: json2.plot
+        })
+      })
     })
   }
 

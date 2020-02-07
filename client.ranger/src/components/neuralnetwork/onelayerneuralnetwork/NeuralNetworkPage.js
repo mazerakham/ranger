@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
 import NeuralNetworkPanel from './NeuralNetworkPanel';
-import 'styles/NeuralNetworkPage.css';
+
+import './NeuralNetworkPage.css';
 
 export default class NeuralNetworkPage extends Component {
 

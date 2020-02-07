@@ -7,13 +7,20 @@ import bowser.Controller;
 import bowser.Handler;
 import ox.IO;
 import ox.Json;
+import ranger.db.SessionDB;
+import ranger.db.TrainingCheckpointHandleDB;
+import ranger.db.model.Session;
+import ranger.db.model.TrainingCheckpointHandle;
 import ranger.nn.SingleLayerNeuralNetwork;
 import ranger.nn.plot.NeuralFunctionPlot;
 import ranger.server.service.NeuralNetworkService;
 
 public class NeuralNetworkAPI extends Controller {
 
-  NeuralNetworkService neuralNetworkService = NeuralNetworkService.getInstance();
+  private SessionDB sessionDB = new SessionDB();
+  private TrainingCheckpointHandleDB trainingStepDB = new TrainingCheckpointHandleDB();
+
+  private NeuralNetworkService neuralNetworkService = NeuralNetworkService.getInstance();
 
   @Override
   public void init() {
@@ -36,6 +43,8 @@ public class NeuralNetworkAPI extends Controller {
 
   private final Handler neuralFunctionPlot = (request, response) -> {
     Json json = request.getJson();
+    Session session = sessionDB.get(json.getLong("sessionId"));
+    TrainingCheckpointHandle trainingStep = trainingStepDB.getTrainingStep(session.id, json.getInt("trainingStep"));
     SingleLayerNeuralNetwork neuralNetwork = SingleLayerNeuralNetwork.fromJson(json.getJson("neuralNetwork"));
     NeuralFunctionPlot plot = NeuralFunctionPlot.plot(neuralNetwork);
     response.write(Json.object().with("plot", plot.toJson()));
