@@ -26,8 +26,6 @@ export default class PlainNeuralNetwork extends Component {
 
   renderConnections =() => {
     return bRange(this.numLayers - 1).map(l => {
-      console.log("About to iterate as follows:");
-      console.log(enumerate(cartesian(bRange(this.layerSizes[l]), bRange(this.layerSizes[l+1]))));
       return enumerate(cartesian(bRange(this.layerSizes[l]), bRange(this.layerSizes[l+1]))).map(([key, [i,j]]) => {
         return (
           <NeuronConnection key={key} coords={this.coords.getConnectionCoords(l, i, j, this.numLayers, this.layerSizes)} />

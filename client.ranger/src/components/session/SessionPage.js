@@ -15,12 +15,12 @@ export default class SessionPage extends Component {
       <div className="Session Container">
         <h1>Session</h1>
         <div className="Session Row">
-          <ControlSectionContainer />
-          <NeuralFunctionPlotContainer />
+          <NeuralNetworkPanel neuralNetwork={this.props.neuralNetwork} />
+          <NeuralFunctionPlotContainer plot={this.props.plot} />
         </div>
         <div className="Session Row">
-          <NeuralNetworkPanel neuralNetwork={this.props.neuralNetwork} />
-          <DesiredFunctionPlotContainer />
+          <ControlSectionContainer performTrainingStep={this.props.performTrainingStep} />
+          <DesiredFunctionPlotContainer plot={this.props.desiredPlot} />
         </div>
       </div>
     )

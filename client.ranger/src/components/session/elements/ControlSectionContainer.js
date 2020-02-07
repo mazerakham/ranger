@@ -17,7 +17,7 @@ export default class ControlSectionContainer extends Component {
 
   render() {
     return (
-      <ControlSection batchSize={this.state.batchSize} onBatchSizeChange={this.onBatchSizeChange} />
+      <ControlSection batchSize={this.state.batchSize} onBatchSizeChange={this.onBatchSizeChange} performTrainingStep={this.props.performTrainingStep} />
     )
   }
 }

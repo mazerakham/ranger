@@ -17,20 +17,34 @@ export default class RangerClient {
     }).then(response => response.json());
   }
 
-  getNeuralFunctionPlot = (session, trainingStep) => {
+  neuralFunctionPlot = (datasetType, neuralNetwork) => {
     return fetch(this.baseUrl + '/neuralFunctionPlot', {
       method: 'post',
       body: JSON.stringify({
-        session: session,
-        trainingStep: trainingStep
+        datasetType: datasetType,
+        neuralNetwork: neuralNetwork
       })
-    }).then( response => {
-      return response.json();
-    });
+    }).then(response => response.json());
   }
 
-  train = () => {
-    throw new Error("Not yet implemented.");
+  desiredPlot = (datasetType) => {
+    return fetch(this.baseUrl + '/desiredPlot', {
+      method: 'post',
+      body: JSON.stringify({
+        datasetType: datasetType
+      })
+    }).then(response => response.json());
+  }
+
+  train = (datasetType, neuralNetwork, batchSize) => {
+    return fetch(this.baseUrl + '/train', {
+      method: 'post',
+      body: JSON.stringify({
+        datasetType: datasetType,
+        neuralNetwork: neuralNetwork,
+        batchSize: batchSize
+      })
+    })
   }
 
 }

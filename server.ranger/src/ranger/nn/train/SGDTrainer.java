@@ -2,12 +2,10 @@ package ranger.nn.train;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import ox.Log;
 import ranger.data.Batch;
 import ranger.data.Batcher;
-import ranger.math.Vector;
-import ranger.nn.SingleLayerNeuralNetwork;
-import ranger.nn.NeuralNetworkGradient;
+import ranger.nn.PlainNeuralNetwork;
+import ranger.nn.PlainNeuralNetworkGradient;
 
 public class SGDTrainer {
 
@@ -15,49 +13,22 @@ public class SGDTrainer {
   private final double learningRate;
   private final int numBatches;
 
-  private boolean saveHistory = false;
-  private TrainingHistory history = new TrainingHistory();
-
   public SGDTrainer(Batcher batcher, double learningRate, int numBatches) {
     this.batcher = checkNotNull(batcher);
     this.learningRate = learningRate;
     this.numBatches = numBatches;
   }
 
-  public SGDTrainer saveHistory() {
-    this.saveHistory = true;
-    return this;
-  }
-
-  public TrainingHistory getHistory() {
-    return this.history;
-  }
-
-  public void train(SingleLayerNeuralNetwork neuralNetwork) {
+  public void train(PlainNeuralNetwork neuralNetwork) {
     for (int i = 0; i < numBatches; i++) {
       Batch batch = batcher.getBatch();
-      NeuralNetworkGradient gradient = computeBatchGradient(neuralNetwork, batch);
-      if (i % (numBatches / 20) == 0) {
-        Log.debug("gradient sizes:");
-        Log.debug(gradient + "\n");
-        Log.debug("neural network:");
-        Log.debug(neuralNetwork);
+      PlainNeuralNetworkGradient gradient = new PlainNeuralNetworkGradient(neuralNetwork.specs);
+      for (int j = 0; j < batch.size(); j++) {
+        gradient.add(neuralNetwork.lossGradient(batch.getDatapoint(j), batch.getLabel(j)));
       }
-      if (saveHistory) {
-        history.addEntry(new TrainingEntry(neuralNetwork));
-      }
+      gradient.scale(1.0 / batch.size());
       neuralNetwork.update(gradient, learningRate);
     }
   }
-
-  private NeuralNetworkGradient computeBatchGradient(SingleLayerNeuralNetwork neuralNetwork, Batch batch) {
-    NeuralNetworkGradient gradient = new NeuralNetworkGradient(neuralNetwork);
-    for (int i = 0; i < batch.size(); i++) {
-      Vector datapoint = batch.getDatapoint(i);
-      Vector label = batch.getLabel(i);
-      gradient = gradient.plus(neuralNetwork.lossGradient(datapoint, label));
-    }
-    gradient.scale(batch.size());
-    return gradient;
-  }
 }
+

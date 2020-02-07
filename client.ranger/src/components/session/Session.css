@@ -10,9 +10,7 @@
   flex-direction: row;
 }
 
-.Session.Panel {
-  display: flex;
-  flex-direction: row;
+.Session.Row .Panel {
   justify-content: center;
   align-items: center;
   height: 220px;
@@ -20,6 +18,3 @@
   outline: 2px solid black;
 }
 
-.plain-nn.svg.div {
-  height: 100%;
-}

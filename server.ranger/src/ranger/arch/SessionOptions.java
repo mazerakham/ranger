@@ -14,7 +14,7 @@ public class SessionOptions {
   public static SessionOptions fromJson(Json json) {
     String datasetTypeString = json.get("datasetType").toUpperCase();
     Dataset.DatasetType datasetType = parseEnum(datasetTypeString, Dataset.DatasetType.class);
-    PlainNeuralNetworkSpecs specs = PlainNeuralNetworkSpecs.fromJson(json, datasetType.inSize, datasetType.outSize);
+    PlainNeuralNetworkSpecs specs = PlainNeuralNetworkSpecs.fromJson(json);
     return new SessionOptions(datasetType, specs);
   }
 

@@ -6,7 +6,7 @@ export default class NeuralNetworkPanel extends Component {
 
   render() {
     return (
-      <div className="Session Panel">
+      <div className="Session Panel flexrow">
         <div>Here is your plain neural network.</div>
         <div className="plain-nn svg div">
           <PlainNeuralNetworkContainer neuralNetwork={this.props.neuralNetwork} />

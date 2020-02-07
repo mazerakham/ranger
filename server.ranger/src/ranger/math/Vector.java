@@ -140,6 +140,10 @@ public class Vector implements Cloneable {
     return new Matrix().addColumnVector(this);
   }
 
+  public Matrix asRowMatrix() {
+    return new Matrix().addRowVector(this);
+  }
+
   public Json toJson() {
     return Json.array(this.entries);
   }
