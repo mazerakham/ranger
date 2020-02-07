@@ -1,11 +1,9 @@
 package ranger.server.api;
 
-import java.io.File;
 import java.util.Random;
 
 import bowser.Controller;
 import bowser.Handler;
-import ox.IO;
 import ox.Json;
 import ranger.nn.SingleLayerNeuralNetwork;
 import ranger.nn.plot.NeuralFunctionPlot;
@@ -18,7 +16,7 @@ public class NeuralNetworkAPI extends Controller {
   @Override
   public void init() {
     route("POST", "/newNeuralNetwork").to(newNeuralNetwork);
-    route("GET", "/trainingHistory").to(trainingHistory);
+    route("POST", "/train").to(train);
     route("POST", "/neuralFunctionPlot").to(neuralFunctionPlot);
   }
 
@@ -29,9 +27,9 @@ public class NeuralNetworkAPI extends Controller {
     response.write(Json.object().with("neuralNetwork", neuralNetwork.toJson()));
   };
 
-  private final Handler trainingHistory = (request, response) -> {
-    Json ret = IO.from(new File("history2.json")).toJson();
-    response.write(ret);
+  private final Handler train = (request, response) -> {
+    Json json = request.getJson();
+
   };
 
   private final Handler neuralFunctionPlot = (request, response) -> {

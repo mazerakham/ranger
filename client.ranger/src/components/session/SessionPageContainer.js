@@ -15,15 +15,7 @@ export default class SessionPageContainer extends Component {
   }
 
   componentDidMount() {
-    this.rangerClient.createSession(this.props.sessionOptions).then(json => {
-      console.log("Received response json:");
-      console.log(json);
-      this.setState({
-        stage: "finished",
-        neuralNetwork: json.neuralNetwork,
-        session: json.session
-      });
-    })
+    this.rangerClient.newNeuralNetwork
   }
 
   render() {
@@ -36,6 +28,7 @@ export default class SessionPageContainer extends Component {
           <SessionPage 
               sessionOptions={this.props.sessionOptions}
               neuralNetwork={this.state.neuralNetwork}
+              plot={this.state.plot}
           /> 
         )
       default:

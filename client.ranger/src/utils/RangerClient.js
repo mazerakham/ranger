@@ -6,35 +6,31 @@ export default class RangerClient {
     this.baseUrl = 'http://localhost:3001';
   }
 
-  createNeuralNetwork = (hiddenLayerSize) => {
+  newNeuralNetwork = (datasetType, numHiddenLayers, hiddenLayerSizes) => {
     return fetch(this.baseUrl + '/newNeuralNetwork', {
       method: 'post',
-      body: JSON.stringify({hiddenLayerSize: hiddenLayerSize})
-    }).then( response => response.json());
+      body: JSON.stringify({neuralNetworkSpecs: {
+        datasetType: datasetType,
+        numHiddenLayers: numHiddenLayers,
+        hiddenLayerSizes: hiddenLayerSizes
+      }})
+    }).then(response => response.json());
   }
 
-  getTrainingHistory = () => {
-    return fetch(this.baseUrl + '/trainingHistory', {
-      method: 'get'
-    }).then( response => response.json() );
-  }
-
-  getNeuralFunctionPlot = (neuralNetwork) => {
+  getNeuralFunctionPlot = (session, trainingStep) => {
     return fetch(this.baseUrl + '/neuralFunctionPlot', {
       method: 'post',
-      body: JSON.stringify({neuralNetwork: neuralNetwork})
+      body: JSON.stringify({
+        session: session,
+        trainingStep: trainingStep
+      })
     }).then( response => {
       return response.json();
     });
   }
 
-  createSession = (sessionOptions) => {
-    return fetch(this.baseUrl + '/createSession', {
-      method: 'post',
-      body: JSON.stringify({sessionOptions: sessionOptions})
-    }).then ( response => {
-      return response.json();
-    });
+  train = () => {
+    throw new Error("Not yet implemented.");
   }
 
 }
