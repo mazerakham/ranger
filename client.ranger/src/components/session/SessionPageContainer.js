@@ -53,11 +53,18 @@ export default class SessionPageContainer extends Component {
   }
 
   performTrainingStep = batchSize => {
-    console.log("Doing training step with batch size: " + batchSize);
+    console.log("Sending neural network: ");
+    console.log(this.state.neuralNetwork);
     this.rangerClient.train(this.props.sessionOptions.datasetType, this.state.neuralNetwork, batchSize).then(json => {
+      console.log("Got back neural network: ");
+      console.log(json.neuralNetwork);
+      console.log("Got back plot: ");
+      console.log(json.plot);
       this.setState({
-        neuralNetwork: json.neuralNetwork
+        neuralNetwork: json.neuralNetwork,
+        plot: json.plot
       });
+      this.forceUpdate();
     })
   }
 

@@ -44,7 +44,7 @@ export default class RangerClient {
         neuralNetwork: neuralNetwork,
         batchSize: batchSize
       })
-    })
+    }).then(response => response.json());
   }
 
 }

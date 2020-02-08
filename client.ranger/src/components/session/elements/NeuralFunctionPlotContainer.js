@@ -5,6 +5,7 @@ import ContourPlot from 'components/meta/ContourPlot';
 export default class NeuralFunctionPlotContainer extends Component {
 
   render() {
+
     return (
       <div className="NeuralNetworkFunctionPlot Panel flexcolumn">
         <span>Current</span>

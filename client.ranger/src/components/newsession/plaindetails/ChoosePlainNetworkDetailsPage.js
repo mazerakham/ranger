@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
 
+import { bRange } from 'utils/Numbers';
+
 export default class ChoosePlainNetworkDetailsPage extends Component {
 
-  range = (n) => !n || n === "0" ? [] : [...this.range(n-1), n-1];
-
   renderLayerSizes = () => {
-    if (this.props.numLayers === 'none') {
+    if (this.props.numHiddenLayers === 'none') {
       return null;
     }
 
-    return this.range(parseInt(this.props.numLayers)).map(i => (
-      <div className="layer-size" key={i}>
-        Layer {i+1} Size:
-        <input type="text" value={this.props.layerSizes[i]} onChange={this.props.onLayerSizeChange(i)}/>
-      </div>
-    ));
+    return bRange(parseInt(this.props.numHiddenLayers)).map(i => {
+      console.log(i);
+      return (
+        <div className="layer-size" key={i}>
+          Layer {i+1} Size:
+          <input type="text" value={this.props.layerSizes[i]} onChange={this.props.onLayerSizeChange(i)}/>
+        </div>
+      )
+    });
   }
 
   render() {

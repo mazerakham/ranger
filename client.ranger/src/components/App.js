@@ -17,7 +17,7 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentPage: "session",
+      currentPage: "home",
       sessionOptions: {
         datasetType: 'xor',
         modelType: 'plain',

@@ -21,8 +21,8 @@ public class PlainNeuralNetworkGradient {
     this.dW = Lists.newArrayListWithCapacity(specs.numLayers - 1);
     this.db = Lists.newArrayListWithCapacity(specs.numLayers - 1);
     for (int i = 0; i < specs.numLayers - 1; i++) {
-      dW.set(i, Matrix.zeros(specs.layerSizes.get(i + 1), specs.layerSizes.get(i)));
-      db.set(i, Vector.zeros(specs.layerSizes.get(i)));
+      dW.add(Matrix.zeros(specs.layerSizes.get(i + 1), specs.layerSizes.get(i)));
+      db.add(Vector.zeros(specs.layerSizes.get(i + 1)));
     }
   }
 

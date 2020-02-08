@@ -3,6 +3,14 @@ import React, { Component } from 'react';
 export default class NeuralFunctionPlotContainer extends Component {
 
   componentDidMount() {
+    this.plot();
+  }
+
+  componentDidUpdate() {
+    this.plot();
+  }
+
+  plot = () => {
     Plotly.newPlot(
       this.props.id,
       [{

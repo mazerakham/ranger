@@ -14,7 +14,9 @@ export default class ChoosePlainNetworkDetailsPageContainer extends Component {
 
   range = (n) => !n || n === "0" ? [] : [...this.range(n-1), n-1];
 
-  onNumLayersChange = (event) => {
+  onNumHiddenLayersChange = (event) => {
+    console.log("Layer Change Event:", event);
+    console.log(event.target.value);
     this.setState({
       numHiddenLayers: event.target.value,
       layerSizes: this.range(event.target.value).map(i => "")
@@ -33,8 +35,8 @@ export default class ChoosePlainNetworkDetailsPageContainer extends Component {
   render() {
     return (
       <ChoosePlainNetworkDetailsPage
-          numLayers={this.state.numLayers} 
-          onNumLayersChange={this.onNumLayersChange} 
+          numHiddenLayers={this.state.numHiddenLayers} 
+          onNumLayersChange={this.onNumHiddenLayersChange} 
           layerSizes={this.state.layerSizes}
           onLayerSizeChange={this.onLayerSizeChange}
           submitNetworkDetails={() => this.props.submitNetworkDetails(this.state)}
