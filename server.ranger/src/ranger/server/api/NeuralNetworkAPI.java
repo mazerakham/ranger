@@ -46,7 +46,7 @@ public class NeuralNetworkAPI extends Controller {
     int batchSize = json.getInt("batchSize");
     Batcher batcher = new Batcher(Dataset.generateDataset(datasetType), batchSize);
     PlainNeuralNetwork neuralNetwork = PlainNeuralNetwork.fromJson(json.getJson("neuralNetwork"));
-    SGDTrainer trainer = new SGDTrainer(batcher, 0.5, 1);
+    SGDTrainer trainer = new SGDTrainer(batcher, 0.15, 1);
     trainer.train(neuralNetwork);
     response.write(Json.object()
         .with("neuralNetwork", neuralNetwork.toJson())
