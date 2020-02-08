@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-export default class NeuralFunctionPlotContainer extends Component {
+export default class ContourPlot extends Component {
 
   componentDidMount() {
     this.plot();
