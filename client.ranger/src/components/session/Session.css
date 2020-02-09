@@ -1,4 +1,9 @@
 
+.Session .Header {
+  display: flex;
+  flex-direction: row;
+}
+
 .Session.Container {
   display: inline-block;
   flex-direction: column;
@@ -20,4 +25,14 @@
 
 .plain-nn.svg.div {
   height: 100%;
+}
+
+.Header button {
+  flex-basis: 20%;
+}
+
+.Header h1 {
+  position: fixed;
+  left: 50%;
+  margin-left: -68px;
 }

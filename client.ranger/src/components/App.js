@@ -22,27 +22,13 @@ export default class App extends Component {
         datasetType: 'xor',
         modelType: 'plain',
         numHiddenLayers: 2,
-        layerSizes: [3,5]
+        layerSizes: [5,3]
       }
     };
-
-    this.rangerClient = new RangerClient();
-    this.rangerClient.newNeuralNetwork(
-        this.state.sessionOptions.datasetType, 
-        this.state.sessionOptions.numHiddenLayers, 
-        this.state.sessionOptions.layerSizes
-    );
   }
 
   loadPage = (pageName) => {
     this.setState({currentPage: pageName});
-  }
-
-  loadNeuralNetworkPage = (neuralNetwork) => {
-    this.setState({
-      currentPage: "neuralNetwork",
-      neuralNetwork: neuralNetwork
-    });
   }
 
   startNewSession = (sessionOptions) => {
@@ -64,8 +50,6 @@ export default class App extends Component {
         return (<NewSessionContainer app={this}/>);
       case "session":
         return (<SessionPageContainer app={this} sessionOptions={this.state.sessionOptions} />);
-      case "neuralNetwork":
-        return (<NeuralNetworkPageContainer app={this} neuralNetwork={this.state.neuralNetwork}/>);
       case "trainingHistory":
         return (<TrainingHistoryPageContainer app={this} />);
       default:

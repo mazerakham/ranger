@@ -14,10 +14,9 @@ export default class SessionPage extends Component {
     return (
       <div className="Session Container">
         <div className="Header">
-          <span><button onClick={this.props.backToHome}>Back to Home</button></span>
+          <button onClick={this.props.backToHome}>Back to Home</button>
           <h1>Session</h1>
         </div>
-        
         <div className="Session Row">
           <NeuralNetworkPanel neuralNetwork={this.props.neuralNetwork} />
           <NeuralFunctionPlotContainer plot={this.props.plot} />

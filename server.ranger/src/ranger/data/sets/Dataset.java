@@ -12,9 +12,9 @@ public class Dataset {
 
   public List<LabeledDatapoint> labeledDatapoints = new ArrayList<>();
 
-  public static Dataset generateDataset(DatasetType type) {
+  public static Dataset generateDataset(DatasetType type, int numExamples) {
     if (type == DatasetType.XOR) {
-      return XOrDataset.generateDefaultXOrDataset();
+      return XOrDataset.generateDefaultXOrDataset(numExamples);
     } else {
       checkState(type == DatasetType.BULLSEYE);
       return BullseyeDataset.generateDefaultBullseyeDataset();

@@ -50,7 +50,7 @@ public class NeuralNetworkAPI extends Controller {
     checkState(json.hasKey("numSteps"), "Request to /train must specify numSteps");
     int numSteps = json.getInt("numSteps");
 
-    Batcher batcher = new Batcher(Dataset.generateDataset(datasetType), batchSize);
+    Batcher batcher = new Batcher(Dataset.generateDataset(datasetType, batchSize * numSteps), batchSize);
     PlainNeuralNetwork neuralNetwork = PlainNeuralNetwork.fromJson(json.getJson("neuralNetwork"));
     SGDTrainer trainer = new SGDTrainer(batcher, 0.15, numSteps);
     trainer.train(neuralNetwork);

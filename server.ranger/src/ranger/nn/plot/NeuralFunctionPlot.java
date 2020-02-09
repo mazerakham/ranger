@@ -1,6 +1,7 @@
 package ranger.nn.plot;
 
 import ox.Json;
+import ranger.data.sets.XOrDataset;
 import ranger.math.Vector;
 import ranger.nn.PlainNeuralNetwork;
 
@@ -29,7 +30,7 @@ public class NeuralFunctionPlot {
     for (int i = 0; i < RESOLUTION; i++) {
       for (int j = 0; j < RESOLUTION; j++) {
         Vector in = ret.window.getPoint(i, j, RESOLUTION);
-        ret.plot[i][j] = Math.abs(in.getEntry(0) - in.getEntry(1));
+        ret.plot[i][j] = XOrDataset.getOptimalValue(in);
       }
     }
     return ret;
