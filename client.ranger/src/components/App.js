@@ -25,6 +25,13 @@ export default class App extends Component {
         layerSizes: [3,5]
       }
     };
+
+    this.rangerClient = new RangerClient();
+    this.rangerClient.newNeuralNetwork(
+        this.state.sessionOptions.datasetType, 
+        this.state.sessionOptions.numHiddenLayers, 
+        this.state.sessionOptions.layerSizes
+    );
   }
 
   loadPage = (pageName) => {

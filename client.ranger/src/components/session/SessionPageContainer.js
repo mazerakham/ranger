@@ -52,10 +52,10 @@ export default class SessionPageContainer extends Component {
     })
   }
 
-  performTrainingStep = batchSize => {
+  performTrainingStep = (batchSize, numSteps) => {
     console.log("Sending neural network: ");
     console.log(this.state.neuralNetwork);
-    this.rangerClient.train(this.props.sessionOptions.datasetType, this.state.neuralNetwork, batchSize).then(json => {
+    this.rangerClient.train(this.props.sessionOptions.datasetType, this.state.neuralNetwork, batchSize, numSteps).then(json => {
       console.log("Got back neural network: ");
       console.log(json.neuralNetwork);
       console.log("Got back plot: ");
@@ -66,6 +66,10 @@ export default class SessionPageContainer extends Component {
       });
       this.forceUpdate();
     })
+  }
+
+  backToHome = () => {
+    this.props.app.loadPage('home');
   }
 
   render() {
@@ -81,6 +85,7 @@ export default class SessionPageContainer extends Component {
               desiredPlot={this.state.desiredPlot}
               plot={this.state.plot}
               performTrainingStep={this.performTrainingStep}
+              backToHome={this.backToHome}
           /> 
         )
       default:

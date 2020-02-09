@@ -40,13 +40,19 @@ public class NeuralNetworkAPI extends Controller {
   };
 
   private final Handler train = (request, response) -> {
+    // Parse JSON request.
     Json json = request.getJson();
     Log.debug(json);
+    checkState(json.hasKey("datasetType"), "Request to /train must specify datasetType");
     DatasetType datasetType = parseEnum(json.get("datasetType").toUpperCase(), DatasetType.class);
+    checkState(json.hasKey("batchSize"), "Request to /train must specify batchSize");
     int batchSize = json.getInt("batchSize");
+    checkState(json.hasKey("numSteps"), "Request to /train must specify numSteps");
+    int numSteps = json.getInt("numSteps");
+
     Batcher batcher = new Batcher(Dataset.generateDataset(datasetType), batchSize);
     PlainNeuralNetwork neuralNetwork = PlainNeuralNetwork.fromJson(json.getJson("neuralNetwork"));
-    SGDTrainer trainer = new SGDTrainer(batcher, 0.15, 1);
+    SGDTrainer trainer = new SGDTrainer(batcher, 0.15, numSteps);
     trainer.train(neuralNetwork);
     response.write(Json.object()
         .with("neuralNetwork", neuralNetwork.toJson())

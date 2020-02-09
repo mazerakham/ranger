@@ -13,7 +13,11 @@ export default class SessionPage extends Component {
   render() {
     return (
       <div className="Session Container">
-        <h1>Session</h1>
+        <div className="Header">
+          <span><button onClick={this.props.backToHome}>Back to Home</button></span>
+          <h1>Session</h1>
+        </div>
+        
         <div className="Session Row">
           <NeuralNetworkPanel neuralNetwork={this.props.neuralNetwork} />
           <NeuralFunctionPlotContainer plot={this.props.plot} />
