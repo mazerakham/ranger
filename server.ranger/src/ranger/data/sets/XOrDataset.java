@@ -4,6 +4,7 @@ import java.util.Random;
 
 import ranger.data.LabeledDatapoint;
 import ranger.math.Vector;
+import ranger.nn.plot.Window;
 
 public class XOrDataset {
 
@@ -44,6 +45,8 @@ public class XOrDataset {
     return (1.0 * wB + 1.0 * wC) / (wA + wB + wC + wD);
   }
 
-
+  public static Window getWindow() {
+    return new Window(-0.2, 1.2, -0.2, 1.2);
+  }
 
 }

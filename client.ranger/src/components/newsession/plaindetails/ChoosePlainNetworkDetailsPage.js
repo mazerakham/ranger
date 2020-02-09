@@ -20,6 +20,14 @@ export default class ChoosePlainNetworkDetailsPage extends Component {
     });
   }
 
+  renderOptions() {
+    return bRange(6).map(i => {
+      return (
+        <option value={i} key={i}>{i}</option>
+      )
+    });
+  }
+
   render() {
     return (
       <div className="ChoosePlainNeuralNetworkDetails Page">
@@ -28,10 +36,7 @@ export default class ChoosePlainNetworkDetailsPage extends Component {
         <p>Number of Layers:</p>
           <select defaultValue="none" className="numHiddenLayers" type="select" onChange={this.props.onNumLayersChange}>
             <option value="none" disabled>Select Number of Hidden Layers.</option>
-            <option value={0}>0</option>
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
+            { this.renderOptions() }
           </select>
         </div>
         { this.renderLayerSizes() }

@@ -8,7 +8,8 @@ export default class ControlSectionContainer extends Component {
     super(props);
     this.state = {
       numSteps: 1,
-      batchSize: 50
+      batchSize: 50,
+      learningRate: 0.01
     }
   }
 
@@ -20,6 +21,14 @@ export default class ControlSectionContainer extends Component {
     this.setState({batchSize: batchSize ? parseInt(batchSize) : "" });
   }
 
+  onLearningRateChange = (learningRate) => {
+    this.setState({learningRate: learningRate ? parseFloat(learningRate) : "" });
+  }
+
+  performTrainingStep = () => {
+    this.props.performTrainingStep(this.state.numSteps, this.state.batchSize, this.state.learningRate);
+  }
+
   render() {
     return (
       <ControlSection 
@@ -27,7 +36,9 @@ export default class ControlSectionContainer extends Component {
           onBatchSizeChange={this.onBatchSizeChange} 
           numSteps={this.state.numSteps}
           onNumStepsChange={this.onNumStepsChange}
-          performTrainingStep={this.props.performTrainingStep}
+          learningRate={this.state.learningRate}
+          onLearningRateChange={this.onLearningRateChange}
+          performTrainingStep={this.performTrainingStep}
       />
     )
   }

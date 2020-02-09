@@ -1,6 +1,10 @@
 package ranger.nn.plot;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import ox.Json;
+import ranger.data.sets.BullseyeDataset;
+import ranger.data.sets.Dataset.DatasetType;
 import ranger.data.sets.XOrDataset;
 import ranger.math.Vector;
 import ranger.nn.PlainNeuralNetwork;
@@ -9,13 +13,28 @@ public class NeuralFunctionPlot {
 
   private static final int RESOLUTION = 50;
 
-  private final Window window = new Window(0, 1, 0, 1);
+  private final Window window;
   private double[][] plot = new double[RESOLUTION][RESOLUTION];
 
-  // TODO this is not dry. Need to abstractify neural networks. But also, this only works for 2D input, so really this
-  // is a temporary function anyway.
-  public static NeuralFunctionPlot plot(PlainNeuralNetwork neuralNetwork) {
-    NeuralFunctionPlot ret = new NeuralFunctionPlot();
+  public NeuralFunctionPlot(Window window) {
+    this.window = window;
+  }
+
+  public NeuralFunctionPlot(double xMin, double xMax, double yMin, double yMax) {
+    this(new Window(xMin, xMax, yMin, yMax));
+  }
+
+  public static NeuralFunctionPlot plot(PlainNeuralNetwork neuralNetwork, DatasetType datasetType) {
+    if (datasetType == DatasetType.XOR) {
+      return plot(neuralNetwork, XOrDataset.getWindow());
+    } else {
+      checkState(datasetType == DatasetType.BULLSEYE);
+      return plot(neuralNetwork, BullseyeDataset.getWindow());
+    }
+  }
+
+  public static NeuralFunctionPlot plot(PlainNeuralNetwork neuralNetwork, Window window) {
+    NeuralFunctionPlot ret = new NeuralFunctionPlot(window);
     for (int i = 0; i < RESOLUTION; i++) {
       for (int j = 0; j < RESOLUTION; j++) {
         Vector in = ret.window.getPoint(i, j, RESOLUTION);
@@ -26,7 +45,7 @@ public class NeuralFunctionPlot {
   }
 
   public static NeuralFunctionPlot xOrDesiredPlot() {
-    NeuralFunctionPlot ret = new NeuralFunctionPlot();
+    NeuralFunctionPlot ret = new NeuralFunctionPlot(XOrDataset.getWindow());
     for (int i = 0; i < RESOLUTION; i++) {
       for (int j = 0; j < RESOLUTION; j++) {
         Vector in = ret.window.getPoint(i, j, RESOLUTION);
@@ -36,26 +55,21 @@ public class NeuralFunctionPlot {
     return ret;
   }
 
+  public static NeuralFunctionPlot bullseyeDesiredPlot() {
+    NeuralFunctionPlot ret = new NeuralFunctionPlot(BullseyeDataset.getWindow());
+    for (int i = 0; i < RESOLUTION; i++) {
+      for (int j = 0; j < RESOLUTION; j++) {
+        Vector in = ret.window.getPoint(i, j, RESOLUTION);
+        ret.plot[i][j] = BullseyeDataset.getOptimalValue(in);
+      }
+    }
+    return ret;
+  }
+
   public Json toJson() {
     return Json.array(plot, doubleArray -> Json.array(doubleArray));
   }
 
-  private static class Window {
-    private double xMin, xMax, yMin, yMax;
 
-    public Window(double xMin, double xMax, double yMin, double yMax) {
-      this.xMin = xMin;
-      this.xMax = xMax;
-      this.yMin = yMin;
-      this.yMax = yMax;
-    }
-
-    public Vector getPoint(int i, int j, int resolution) {
-      return new Vector(
-          xMin + (xMax - xMin) * i / resolution,
-          yMin + (yMax - yMin) * j / resolution
-          );
-    }
-  }
 }
 

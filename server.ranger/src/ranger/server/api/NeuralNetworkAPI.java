@@ -49,27 +49,43 @@ public class NeuralNetworkAPI extends Controller {
     int batchSize = json.getInt("batchSize");
     checkState(json.hasKey("numSteps"), "Request to /train must specify numSteps");
     int numSteps = json.getInt("numSteps");
+    checkState(json.hasKey("learningRate"), "Request to /train must specify learningRate");
+    double learningRate = json.getDouble("learningRate");
 
     Batcher batcher = new Batcher(Dataset.generateDataset(datasetType, batchSize * numSteps), batchSize);
     PlainNeuralNetwork neuralNetwork = PlainNeuralNetwork.fromJson(json.getJson("neuralNetwork"));
-    SGDTrainer trainer = new SGDTrainer(batcher, 0.15, numSteps);
+    SGDTrainer trainer = new SGDTrainer(batcher, learningRate, numSteps);
     trainer.train(neuralNetwork);
     response.write(Json.object()
         .with("neuralNetwork", neuralNetwork.toJson())
-        .with("plot", NeuralFunctionPlot.plot(neuralNetwork).toJson()));
+        .with("plot", NeuralFunctionPlot.plot(neuralNetwork, datasetType).toJson()));
   };
 
   private final Handler neuralFunctionPlot = (request, response) -> {
     Json json = request.getJson();
+    checkState(json.hasKey("neuralNetwork"), "Request to /neuralFunctionPlot requires a neuralNetwork parameter.");
     PlainNeuralNetwork neuralNetwork = PlainNeuralNetwork.fromJson(json.getJson("neuralNetwork"));
-    NeuralFunctionPlot plot = NeuralFunctionPlot.plot(neuralNetwork);
+    checkState(json.hasKey("datasetType"), "Request to /neuralFunctionPlot requires a datasetType parametere.");
+    DatasetType datasetType = parseEnum(json.get("datasetType").toUpperCase(), DatasetType.class);
+
+    NeuralFunctionPlot plot = NeuralFunctionPlot.plot(neuralNetwork, datasetType);
     response.write(Json.object().with("plot", plot.toJson()));
   };
 
   private final Handler desiredPlot = (request, response) -> {
     // TODO: Right now we just send back X-OR.
-    NeuralFunctionPlot plot = NeuralFunctionPlot.xOrDesiredPlot();
-    response.write(Json.object().with("plot", plot.toJson()));
+    Json json = request.getJson();
+    checkState(json.hasKey("datasetType"), "Request to /desiredPlot requires a datasetType parameter");
+    
+    DatasetType type = parseEnum(json.get("datasetType").toUpperCase(), DatasetType.class);
+    if (type == DatasetType.XOR) {
+      response.write(Json.object().with("plot", NeuralFunctionPlot.xOrDesiredPlot().toJson()));
+    } else {
+      checkState(type == DatasetType.BULLSEYE);
+      NeuralFunctionPlot plot = NeuralFunctionPlot.bullseyeDesiredPlot();
+      Log.debug(plot);
+      response.write(Json.object().with("plot", plot.toJson()));
+    }
   };
 
   private static PlainNeuralNetworkSpecs parsePlainNeuralNetworkSpecs(Json nnJson) {

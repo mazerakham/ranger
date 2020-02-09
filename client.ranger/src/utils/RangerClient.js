@@ -36,14 +36,16 @@ export default class RangerClient {
     }).then(response => response.json());
   }
 
-  train = (datasetType, neuralNetwork, batchSize, numSteps) => {
+  train = (datasetType, neuralNetwork, batchSize, numSteps, learningRate) => {
+    console.log(datasetType, neuralNetwork, batchSize, numSteps, learningRate);
     return fetch(this.baseUrl + '/train', {
       method: 'post',
       body: JSON.stringify({
         datasetType: datasetType,
         neuralNetwork: neuralNetwork,
         batchSize: batchSize,
-        numSteps: numSteps
+        numSteps: numSteps,
+        learningRate: learningRate
       })
     }).then(response => response.json());
   }
