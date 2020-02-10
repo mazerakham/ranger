@@ -16,6 +16,8 @@ import ranger.math.Vector;
 
 public class PlainNeuralNetwork {
 
+  private static final double L1_REG_CONSTANT = 0.01;
+  
   /**
    * Includes input layer and output layer.
    */
@@ -104,7 +106,9 @@ public class PlainNeuralNetwork {
     Vector xGrad = activation.getPreActivation(N - 1).minus(label); // RMSE Gradient, or xGrad N - 1.
     for (int i = N - 2; i >= 0; i--) {
       // Given xGrad i + 1, compute dW i, db i, and xGrad i,
-      ret.dW.set(i, xGrad.asColumnMatrix().multiply(RangerMath.relu(activation.getPreActivation(i)).asRowMatrix()));
+      ret.dW.set(i,
+          xGrad.asColumnMatrix().multiply(RangerMath.relu(activation.getPreActivation(i)).asRowMatrix())
+              .plus(RangerMath.signum(this.W.get(i)).scale(L1_REG_CONSTANT)));
       ret.db.set(i, xGrad);
       xGrad = this.W.get(i).transpose().multiply(xGrad).otimes(RangerMath.heaviside(activation.getPreActivation(i)));
     }

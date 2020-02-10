@@ -79,4 +79,16 @@ public class RangerMath {
   public static double heaviside(double d) {
     return d > 0.0 ? 1.0 : 0.0;
   }
+
+  public static Vector signum(Vector vector) {
+    Vector ret = new Vector();
+    for (int i = 0; i < vector.size(); i++) {
+      ret.addEntry(Math.signum(vector.getEntry(i)));
+    }
+    return ret;
+  }
+
+  public static Matrix signum(Matrix matrix) {
+    return Matrix.fromFunction(matrix.height(), matrix.width(), (i, j) -> Math.signum(matrix.getEntry(i, j)));
+  }
 }

@@ -24,10 +24,14 @@ export default class NewSessionContainer extends Component {
     });
     if (modelType === 'plain') {
       this.setState({
+        modelType: 'plain',
         stage: 'plainDetails'
       });
-    } else {
-      throw new Error('Ranger network is not yet supported.');
+    } else if (modelType === 'ranger') {
+      this.setState({
+        modelType: 'ranger',
+        stage: 'rangerDetails'
+      })
     }
   }
 
@@ -47,6 +51,8 @@ export default class NewSessionContainer extends Component {
         return ( <ChooseModelPageContainer selectModel={this.selectModel} />);
       case 'plainDetails':
         return ( <ChoosePlainNetworkDetailsPageContainer submitNetworkDetails={this.selectNetworkDetails} /> );
+      case 'rangerDetails':
+        return ( <RangerNetworkDetailsPageContainer subm> );
       default:
         throw new Error('Unknown page: ' + this.state.stage);
     }
