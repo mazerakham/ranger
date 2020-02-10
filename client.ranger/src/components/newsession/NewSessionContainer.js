@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import ChooseDatasetPageContainer from './choosedataset/ChooseDatasetPageContainer';
 import ChooseModelPageContainer from './choosemodel/ChooseModelPageContainer';
 import ChoosePlainNetworkDetailsPageContainer from './plaindetails/ChoosePlainNetworkDetailsPageContainer';
+import RangerNetworkDetailsPageContainer from './rangerdetails/RangerNetworkDetailsPageContainer';
 
 export default class NewSessionContainer extends Component {
 
@@ -19,9 +20,6 @@ export default class NewSessionContainer extends Component {
   }
 
   selectModel = (modelType) => {
-    this.setState({
-      modelType: modelType,
-    });
     if (modelType === 'plain') {
       this.setState({
         modelType: 'plain',
@@ -35,11 +33,16 @@ export default class NewSessionContainer extends Component {
     }
   }
 
-  selectNetworkDetails = (networkDetails) => {
+  selectNetworkDetails = (neuralNetworkSpecs) => {
     this.setState({
-      ...networkDetails
+      neuralNetworkSpecs: neuralNetworkSpecs
     });
-    let allOptions = {...this.state, ...networkDetails};
+    let allOptions = {
+      ...this.state, 
+      neuralNetworkSpecs: neuralNetworkSpecs
+    };
+    console.log("Selecting Network Details with allOptions:");
+    console.log(allOptions);
     this.props.app.startNewSession(allOptions);
   }
 
@@ -52,7 +55,7 @@ export default class NewSessionContainer extends Component {
       case 'plainDetails':
         return ( <ChoosePlainNetworkDetailsPageContainer submitNetworkDetails={this.selectNetworkDetails} /> );
       case 'rangerDetails':
-        return ( <RangerNetworkDetailsPageContainer subm> );
+        return ( <RangerNetworkDetailsPageContainer submitNetworkDetails={this.selectNetworkDetails} /> );
       default:
         throw new Error('Unknown page: ' + this.state.stage);
     }

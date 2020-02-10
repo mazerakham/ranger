@@ -6,22 +6,22 @@ export default class RangerClient {
     this.baseUrl = 'http://localhost:3001';
   }
 
-  newNeuralNetwork = (datasetType, numHiddenLayers, hiddenLayerSizes) => {
+  newNeuralNetwork = (modelType, specs) => {
     return fetch(this.baseUrl + '/newNeuralNetwork', {
       method: 'post',
-      body: JSON.stringify({neuralNetworkSpecs: {
-        datasetType: datasetType,
-        numHiddenLayers: numHiddenLayers,
-        hiddenLayerSizes: hiddenLayerSizes
-      }})
+      body: JSON.stringify({
+        modelType: modelType,
+        neuralNetworkSpecs: specs
+      })
     }).then(response => response.json());
   }
 
-  neuralFunctionPlot = (datasetType, neuralNetwork) => {
+  neuralFunctionPlot = (datasetType, modelType, neuralNetwork) => {
     return fetch(this.baseUrl + '/neuralFunctionPlot', {
       method: 'post',
       body: JSON.stringify({
         datasetType: datasetType,
+        modelType: modelType,
         neuralNetwork: neuralNetwork
       })
     }).then(response => response.json());

@@ -1,4 +1,4 @@
-package ranger.nn;
+package ranger.nn.plain;
 
 import java.util.ArrayList;
 import java.util.List;

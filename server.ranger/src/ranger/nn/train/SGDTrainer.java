@@ -4,8 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import ranger.data.Batch;
 import ranger.data.Batcher;
-import ranger.nn.PlainNeuralNetwork;
-import ranger.nn.PlainNeuralNetworkGradient;
+import ranger.nn.plain.PlainNeuralNetwork;
+import ranger.nn.plain.PlainNeuralNetworkGradient;
 
 public class SGDTrainer {
 

@@ -1,10 +1,12 @@
 package ranger.math;
 
 import static com.google.common.base.Preconditions.checkState;
+import static ox.util.Functions.map;
 import static ox.util.Utils.only;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import ox.Json;
 
@@ -46,6 +48,10 @@ public class Vector implements Cloneable {
     for (double entry : entries) {
       addEntry(entry);
     }
+  }
+
+  public <T> Vector(List<T> objects, Function<T, Double> mapping) {
+    this(map(objects, mapping));
   }
 
   public static Vector fromJson(Json json) {

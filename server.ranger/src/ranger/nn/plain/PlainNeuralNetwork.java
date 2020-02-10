@@ -1,9 +1,10 @@
-package ranger.nn;
+package ranger.nn.plain;
 
 import static ox.util.Functions.map;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 
@@ -14,7 +15,7 @@ import ranger.arch.PlainNeuralNetworkSpecs;
 import ranger.math.Matrix;
 import ranger.math.Vector;
 
-public class PlainNeuralNetwork {
+public class PlainNeuralNetwork implements Function<Vector, Vector> {
 
   private static final double L1_REG_CONSTANT = 0.01;
   
@@ -127,6 +128,11 @@ public class PlainNeuralNetwork {
         .with("specs", specs.toJson())
         .with("W", Json.array(W, Matrix::toJson))
         .with("b", Json.array(b, Vector::toJson));
+  }
+
+  @Override
+  public Vector apply(Vector t) {
+    return estimate(t);
   }
 
 }

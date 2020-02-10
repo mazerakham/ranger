@@ -2,12 +2,13 @@ package ranger.nn.plot;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.function.Function;
+
 import ox.Json;
 import ranger.data.sets.BullseyeDataset;
 import ranger.data.sets.Dataset.DatasetType;
 import ranger.data.sets.XOrDataset;
 import ranger.math.Vector;
-import ranger.nn.PlainNeuralNetwork;
 
 public class NeuralFunctionPlot {
 
@@ -24,21 +25,21 @@ public class NeuralFunctionPlot {
     this(new Window(xMin, xMax, yMin, yMax));
   }
 
-  public static NeuralFunctionPlot plot(PlainNeuralNetwork neuralNetwork, DatasetType datasetType) {
+  public static NeuralFunctionPlot plot(Function<Vector, Vector> model, DatasetType datasetType) {
     if (datasetType == DatasetType.XOR) {
-      return plot(neuralNetwork, XOrDataset.getWindow());
+      return plot(model, XOrDataset.getWindow());
     } else {
       checkState(datasetType == DatasetType.BULLSEYE);
-      return plot(neuralNetwork, BullseyeDataset.getWindow());
+      return plot(model, BullseyeDataset.getWindow());
     }
   }
 
-  public static NeuralFunctionPlot plot(PlainNeuralNetwork neuralNetwork, Window window) {
+  public static NeuralFunctionPlot plot(Function<Vector, Vector> model, Window window) {
     NeuralFunctionPlot ret = new NeuralFunctionPlot(window);
     for (int i = 0; i < RESOLUTION; i++) {
       for (int j = 0; j < RESOLUTION; j++) {
         Vector in = ret.window.getPoint(i, j, RESOLUTION);
-        ret.plot[i][j] = neuralNetwork.estimate(in).toScalar();
+        ret.plot[i][j] = model.apply(in).toScalar();
       }
     }
     return ret;

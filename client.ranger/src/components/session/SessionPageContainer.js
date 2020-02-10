@@ -17,9 +17,8 @@ export default class SessionPageContainer extends Component {
   componentDidMount() {
     console.log(this.props.sessionOptions);
     this.rangerClient.newNeuralNetwork(
-        this.props.sessionOptions.datasetType, 
-        this.props.sessionOptions.numHiddenLayers, 
-        this.props.sessionOptions.layerSizes
+        this.props.sessionOptions.modelType,
+        this.props.sessionOptions.neuralNetworkSpecs
     ).then(this.onNeuralNetworkCreated);
 
     this.rangerClient.desiredPlot(this.props.sessionOptions.datasetType).then(this.onDesiredPlotCreated);
@@ -31,8 +30,11 @@ export default class SessionPageContainer extends Component {
     this.setState({
       neuralNetwork: json.neuralNetwork
     })
-    this.rangerClient.neuralFunctionPlot(this.props.sessionOptions.datasetType, json.neuralNetwork)
-        .then(this.onNeuralFunctionPlotCreated);
+    this.rangerClient.neuralFunctionPlot(
+        this.props.sessionOptions.datasetType, 
+        this.props.sessionOptions.modelType, 
+        json.neuralNetwork
+    ).then(this.onNeuralFunctionPlotCreated);
   }
 
   onNeuralFunctionPlotCreated = json => {
