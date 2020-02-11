@@ -19,7 +19,7 @@ export default class PlainNeuralNetwork extends Component {
   renderLayers = () => {
     return bRange(this.numLayers).map(i => {
       return (
-        <PlainLayer key={i} layerSize={this.layerSizes[i]} coords={this.coords.getLayerEmbedding(i, this.numLayers, this.layerSizes[i])} /> 
+        <PlainLayer key={i} layerSize={this.layerSizes[i]} coords={this.coords.getLayerEmbedding(i, this.layerSizes[i])} /> 
       );
     })
   }
@@ -53,7 +53,7 @@ class PlainNeuralNetworkCoords extends Coordinates {
     this.h = 10;
   }
 
-  getLayerEmbedding = (i, numLayers, layerSize) => {
+  getLayerEmbedding = (i, layerSize) => {
     return {
       x: 1 + 2 * i,
       y: 4.5 - layerSize / 2,
