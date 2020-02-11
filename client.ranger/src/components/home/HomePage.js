@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import LoadingText from "./LoadingText";
 
-import "styles/HomePage.css";
+import "./HomePage.css";
 
 export default class HomePage extends Component {
 

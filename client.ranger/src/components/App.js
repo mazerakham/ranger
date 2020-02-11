@@ -2,13 +2,10 @@ import React, {Component} from 'react';
 
 import TestPageContainer from 'components/test/TestPageContainer';
 import HomePageContainer from 'components/home/HomePageContainer';
-import DataExplorationPageContainer from 'components/dataexploration/DataExplorationPageContainer';
 import NewSessionContainer from 'components/newsession/NewSessionContainer';
 import SessionPageContainer from 'components/session/SessionPageContainer';
 
 import 'styles/App.css';
-
-import RangerClient from 'utils/RangerClient';
 
 export default class App extends Component {
 
@@ -42,8 +39,6 @@ export default class App extends Component {
         return (<TestPageContainer />);
       case "home":
         return (<HomePageContainer app={this} />);
-      case "dataExploration":
-        return (<DataExplorationPageContainer app={this}/>);
       case "newSession":
         return (<NewSessionContainer app={this}/>);
       case "session":

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import 'styles/ModalBackdrop.css';
+import './ModalBackdrop.css';
 
 export default class ModalBackdrop extends Component {
 

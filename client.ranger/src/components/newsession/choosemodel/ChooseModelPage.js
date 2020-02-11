@@ -1,7 +1,5 @@
 import React, { Component } from 'react';
 
-import 'styles/NewSession.css';
-
 export default class ChooseModelPage extends Component {
 
   render() {

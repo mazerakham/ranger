@@ -5,6 +5,8 @@ import ChooseModelPageContainer from './choosemodel/ChooseModelPageContainer';
 import ChoosePlainNetworkDetailsPageContainer from './plaindetails/ChoosePlainNetworkDetailsPageContainer';
 import RangerNetworkDetailsPageContainer from './rangerdetails/RangerNetworkDetailsPageContainer';
 
+import './NewSession.css';
+
 export default class NewSessionContainer extends Component {
 
   constructor(props) {
