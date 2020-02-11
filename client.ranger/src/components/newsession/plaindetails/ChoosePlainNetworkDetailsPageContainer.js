@@ -8,7 +8,7 @@ export default class ChoosePlainNetworkDetailsPageContainer extends Component {
     super(props);
     this.state = {
       numHiddenLayers: "none",
-      layerSizes: []
+      hiddenLayerSizes: []
     }
   }
 
@@ -19,16 +19,16 @@ export default class ChoosePlainNetworkDetailsPageContainer extends Component {
     console.log(event.target.value);
     this.setState({
       numHiddenLayers: event.target.value,
-      layerSizes: this.range(event.target.value).map(i => "")
+      hiddenLayerSizes: this.range(event.target.value).map(i => "")
     });
 
   }
 
-  onLayerSizeChange = (i) => {
+  onHiddenLayerSizeChange = (i) => {
     return (event) => {
-      let newLayerSizes = [...this.state.layerSizes];
-      newLayerSizes[i] = parseInt(event.target.value);
-      this.setState({layerSizes: newLayerSizes});
+      let newHiddenLayerSizes = [...this.state.hiddenLayerSizes];
+      newHiddenLayerSizes[i] = parseInt(event.target.value);
+      this.setState({hiddenLayerSizes: newHiddenLayerSizes});
     }
   }
 
@@ -36,9 +36,9 @@ export default class ChoosePlainNetworkDetailsPageContainer extends Component {
     return (
       <ChoosePlainNetworkDetailsPage
           numHiddenLayers={this.state.numHiddenLayers} 
-          onNumLayersChange={this.onNumHiddenLayersChange} 
-          layerSizes={this.state.layerSizes}
-          onLayerSizeChange={this.onLayerSizeChange}
+          onNumHiddenLayersChange={this.onNumHiddenLayersChange} 
+          hiddenLayerSizes={this.state.hiddenLayerSizes}
+          onHiddenLayerSizeChange={this.onHiddenLayerSizeChange}
           submitNetworkDetails={() => this.props.submitNetworkDetails(this.state)}
       />
     )

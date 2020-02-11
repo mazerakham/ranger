@@ -21,7 +21,10 @@ import ranger.server.service.NeuralNetworkService;
 
 public class NeuralNetworkAPI extends Controller {
 
-  NeuralNetworkService neuralNetworkService = NeuralNetworkService.getInstance();
+  private static final int DEFAULT_SEED = 42;
+  private Random random = new Random(DEFAULT_SEED);
+
+  private NeuralNetworkService neuralNetworkService = NeuralNetworkService.getInstance();
 
   @Override
   public void init() {
@@ -43,7 +46,7 @@ public class NeuralNetworkAPI extends Controller {
       PlainNeuralNetwork neuralNetwork = new PlainNeuralNetwork(specs).initialize(new Random());
       response.write(Json.object().with("neuralNetwork", neuralNetwork.toJson()));
     } else if (modelType.equals("ranger")) {
-      RangerNetwork rangerNetwork = new RangerNetwork(2, 1).initialize();
+      RangerNetwork rangerNetwork = new RangerNetwork(2, 1).initialize(random);
       response.write(Json.object().with("neuralNetwork", rangerNetwork.toJson()));
     } else {
       throw new RuntimeException("Could not recognize modelType: " + modelType);
@@ -51,6 +54,8 @@ public class NeuralNetworkAPI extends Controller {
   };
 
   private final Handler train = (request, response) -> {
+    // TODO: Split this out to the training service, and split into Plain and Ranger training.
+
     // Parse JSON request.
     Json json = request.getJson();
     Log.debug(json);

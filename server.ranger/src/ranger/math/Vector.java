@@ -55,6 +55,9 @@ public class Vector implements Cloneable {
   }
 
   public static Vector fromJson(Json json) {
+    if (json == null) {
+      return null;
+    }
     return new Vector(json.asDoubleArray());
   }
 

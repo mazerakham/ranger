@@ -60,10 +60,15 @@ public class Matrix implements Cloneable {
   }
 
   public static Matrix fromJson(Json json) {
+    if (json == null) {
+      return null;
+    }
+
     Matrix ret = new Matrix();
     json.asJsonArray().forEach(rowJson -> {
       ret.addRowVector(Vector.fromJson(rowJson));
     });
+
     return ret;
   }
 

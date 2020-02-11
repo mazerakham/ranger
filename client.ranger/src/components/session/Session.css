@@ -24,7 +24,7 @@
 }
 
 .plain-nn.svg.div {
-  height: 100%;
+  height: calc(100% - 18px);
 }
 
 .Header button {
