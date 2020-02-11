@@ -5,8 +5,6 @@ import HomePageContainer from 'components/home/HomePageContainer';
 import DataExplorationPageContainer from 'components/dataexploration/DataExplorationPageContainer';
 import NewSessionContainer from 'components/newsession/NewSessionContainer';
 import SessionPageContainer from 'components/session/SessionPageContainer';
-import NeuralNetworkPageContainer from 'components/neuralnetwork/onelayerneuralnetwork/NeuralNetworkPageContainer';
-import TrainingHistoryPageContainer from 'components/traininghistory/TrainingHistoryPageContainer';
 
 import 'styles/App.css';
 
@@ -50,8 +48,6 @@ export default class App extends Component {
         return (<NewSessionContainer app={this}/>);
       case "session":
         return (<SessionPageContainer app={this} sessionOptions={this.state.sessionOptions} />);
-      case "trainingHistory":
-        return (<TrainingHistoryPageContainer app={this} />);
       default:
         throw new Error("Unknown page: " + this.state.currentPage);
     }
