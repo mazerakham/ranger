@@ -22,7 +22,13 @@ export default class SessionPage extends Component {
           <NeuralFunctionPlotContainer plot={this.props.plot} />
         </div>
         <div className="Session Row">
-          <ControlSectionContainer performTrainingStep={this.props.performTrainingStep} modelType={this.props.sessionOptions.modelType} />
+          <ControlSectionContainer 
+              neuralNetwork={this.props.neuralNetwork} 
+              updateNeuralNetwork={this.props.updateNeuralNetwork}
+              updatePlot={this.props.updatePlot}
+              modelType={this.props.sessionOptions.modelType}
+              datasetType={this.props.sessionOptions.datasetType}
+          />
           <DesiredFunctionPlotContainer plot={this.props.desiredPlot} />
         </div>
       </div>

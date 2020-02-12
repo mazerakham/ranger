@@ -67,12 +67,12 @@ class PlainNeuralNetworkCoords extends Coordinates {
     const plainLayer2Coords = new PlainLayerCoords(layerSizes[l+1]);
     const [x1, y1] = this.fromChildCoords(
       plainLayer1Coords.getNeuronCenter(i),
-      this.getLayerEmbedding(l, numLayers, layerSizes[l]),
+      this.getLayerEmbedding(l, layerSizes[l]),
       plainLayer1Coords
     );
     const [x2, y2] = this.fromChildCoords(
       plainLayer2Coords.getNeuronCenter(j),
-      this.getLayerEmbedding(l+1, numLayers, layerSizes[l+1]),
+      this.getLayerEmbedding(l+1, layerSizes[l+1]),
       plainLayer2Coords
     );
     return {x1: x1, y1: y1, x2: x2, y2: y2};

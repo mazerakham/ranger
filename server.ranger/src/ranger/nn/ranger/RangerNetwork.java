@@ -26,12 +26,58 @@ public class RangerNetwork implements Function<Vector, Vector> {
     this.outSize = outSize;
   }
 
+  /**
+   * Call immediately after the constructor to initialize as a (He/Xavier) randomly-weighted linear regressor from input
+   * layer to output layer.
+   */
   public RangerNetwork initialize(Random random) {
     inputLayer = new Layer(inSize);
     outputLayer = new Layer(outSize).xavierInitialize(inSize, random);
     layers.add(inputLayer);
     layers.add(outputLayer);
     return this;
+  }
+
+  /**
+   * Insert an identity layer between each layer.
+   */
+  public void expand() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Randomly insert neurons in the layers with random choice of dendrites.
+   */
+  public void addNewNeurons() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Forward propagate the input through the network, computing pre-activations and activations throughout.
+   */
+  public void propagateForward(Vector input) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Backward propagate the label through the network, computing error gradients of every kind.
+   */
+  public void propagateBackward(Vector label) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Update the internal state of each neuron. See
+   */
+  public void updateNeurons() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Remove any layers that consist only of identity neurons.
+   */
+  public void contract() {
+    throw new UnsupportedOperationException();
   }
 
   /**

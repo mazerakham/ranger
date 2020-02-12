@@ -16,25 +16,29 @@ export default class SessionPageContainer extends Component {
 
   componentDidMount() {
     console.log(this.props.sessionOptions);
-    this.rangerClient.newNeuralNetwork(
-        this.props.sessionOptions.modelType,
-        this.props.sessionOptions.neuralNetworkSpecs
-    ).then(this.onNeuralNetworkCreated);
-
-    this.rangerClient.desiredPlot(this.props.sessionOptions.datasetType).then(this.onDesiredPlotCreated);
+    this.rangerClient.newNeuralNetwork(this.props.sessionOptions.modelType, this.props.sessionOptions.neuralNetworkSpecs)
+        .then(this.onNeuralNetworkCreated);
+    this.rangerClient.desiredPlot(this.props.sessionOptions.datasetType)
+        .then(this.onDesiredPlotCreated);
   }
 
   onNeuralNetworkCreated = json => {
     console.log("Created new neural network: ");
     console.log(json.neuralNetwork);
-    this.setState({
-      neuralNetwork: json.neuralNetwork
-    })
+    this.updateNeuralNetwork(json.neuralNetwork);
     this.rangerClient.neuralFunctionPlot(
         this.props.sessionOptions.datasetType, 
         this.props.sessionOptions.modelType, 
         json.neuralNetwork
     ).then(this.onNeuralFunctionPlotCreated);
+  }
+
+  onDesiredPlotCreated = json => {
+    console.log("Created desired plot:");
+    console.log(json.plot);
+    this.setState({
+      desiredPlot: json.plot
+    })
   }
 
   onNeuralFunctionPlotCreated = json => {
@@ -46,29 +50,9 @@ export default class SessionPageContainer extends Component {
     })
   }
 
-  onDesiredPlotCreated = json => {
-    console.log("Created desired plot:");
-    console.log(json.plot);
-    this.setState({
-      desiredPlot: json.plot
-    })
-  }
+  updateNeuralNetwork = neuralNetwork => this.setState({neuralNetwork: neuralNetwork});
 
-  performTrainingStep = (batchSize, numSteps, learningRate) => {
-    console.log("Sending neural network: ");
-    console.log(this.state.neuralNetwork);
-    this.rangerClient.train(this.props.sessionOptions.datasetType, this.state.neuralNetwork, batchSize, numSteps, learningRate).then(json => {
-      console.log("Got back neural network: ");
-      console.log(json.neuralNetwork);
-      console.log("Got back plot: ");
-      console.log(json.plot);
-      this.setState({
-        neuralNetwork: json.neuralNetwork,
-        plot: json.plot
-      });
-      this.forceUpdate();
-    })
-  }
+  updatePlot = plot => this.setState({plot: plot});
 
   backToHome = () => {
     this.props.app.loadPage('home');
@@ -83,10 +67,16 @@ export default class SessionPageContainer extends Component {
         return ( 
           <SessionPage 
               sessionOptions={this.props.sessionOptions}
+              modelType={this.props.sessionOptions.modelType}
+
               neuralNetwork={this.state.neuralNetwork}
+              updateNeuralNetwork={this.updateNeuralNetwork}
+              
               desiredPlot={this.state.desiredPlot}
+
               plot={this.state.plot}
-              performTrainingStep={this.performTrainingStep}
+              updatePlot={this.updatePlot}
+
               backToHome={this.backToHome}
           /> 
         )

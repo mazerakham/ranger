@@ -23,7 +23,7 @@
   outline: 2px solid black;
 }
 
-.plain-nn.svg.div {
+.svg.div {
   height: calc(100% - 18px);
 }
 

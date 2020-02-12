@@ -16,6 +16,7 @@ import ranger.data.sets.Dataset.DatasetType;
 import ranger.nn.plain.PlainNeuralNetwork;
 import ranger.nn.plot.NeuralFunctionPlot;
 import ranger.nn.ranger.RangerNetwork;
+import ranger.nn.train.RangerTrainer;
 import ranger.nn.train.SGDTrainer;
 import ranger.server.service.NeuralNetworkService;
 
@@ -30,6 +31,7 @@ public class NeuralNetworkAPI extends Controller {
   public void init() {
     route("POST", "/newNeuralNetwork").to(newNeuralNetwork);
     route("POST", "/train").to(train);
+    route("POST", "/trainRanger").to(trainRanger);
     route("POST", "/neuralFunctionPlot").to(neuralFunctionPlot);
     route("POST", "/desiredPlot").to(desiredPlot);
   }
@@ -54,8 +56,6 @@ public class NeuralNetworkAPI extends Controller {
   };
 
   private final Handler train = (request, response) -> {
-    // TODO: Split this out to the training service, and split into Plain and Ranger training.
-
     // Parse JSON request.
     Json json = request.getJson();
     Log.debug(json);
@@ -75,6 +75,23 @@ public class NeuralNetworkAPI extends Controller {
     response.write(Json.object()
         .with("neuralNetwork", neuralNetwork.toJson())
         .with("plot", NeuralFunctionPlot.plot(neuralNetwork, datasetType).toJson()));
+  };
+
+  private final Handler trainRanger = (request, response) -> {
+    Json json = request.getJson();
+    Log.debug("\ntrainRanger Handler received JSON:");
+    Log.debug(json);
+
+    checkState(json.hasKey("neuralNetwork"));
+    checkState(json.hasKey("datasetType"));
+    RangerNetwork rangerNetwork = RangerNetwork.fromJson(json.getJson("neuralNetwork"));
+    DatasetType datasetType = parseEnum(json.get("datasetType").toUpperCase(), DatasetType.class);
+
+    new RangerTrainer(rangerNetwork, datasetType).performTrainingStep();
+
+    response.write(Json.object()
+        .with("neuralNetwork", rangerNetwork.toJson())
+        .with("plot", NeuralFunctionPlot.plot(rangerNetwork, datasetType).toJson()));
   };
 
   private final Handler neuralFunctionPlot = (request, response) -> {
