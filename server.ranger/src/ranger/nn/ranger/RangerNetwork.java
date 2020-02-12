@@ -3,6 +3,7 @@ package ranger.nn.ranger;
 import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Functions.map;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -42,42 +43,64 @@ public class RangerNetwork implements Function<Vector, Vector> {
    * Insert an identity layer between each layer.
    */
   public void expand() {
-    throw new UnsupportedOperationException();
+    ArrayList<Layer> newLayers = Lists.newArrayList();
+    for (int i = 0; i < layers.size() - 1; i++) {
+      newLayers.add(layers.get(i));
+      newLayers.add(Layer.identityLayer(layers.get(i)));
+    }
+    newLayers.add(outputLayer);
+    this.layers = newLayers;
   }
 
   /**
    * Randomly insert neurons in the layers with random choice of dendrites.
    */
   public void addNewNeurons() {
-    throw new UnsupportedOperationException();
+    new NeuronGenerator(this).generateNeurons();
   }
 
   /**
    * Forward propagate the input through the network, computing pre-activations and activations throughout.
    */
   public void propagateForward(Vector input) {
-    throw new UnsupportedOperationException();
+    inputLayer.loadActivation(input);
+    for (int i = 1; i < layers.size(); i++) {
+      layers.get(i).loadDendriteStimulus(layers.get(i - 1).getAxonActivation()).computeAxonActivation();
+    }
   }
 
   /**
    * Backward propagate the label through the network, computing error gradients of every kind.
    */
   public void propagateBackward(Vector label) {
-    throw new UnsupportedOperationException();
+    outputLayer.loadAxonSignal(label).computeDendriteSignal();
+    for (int i = layers.size() - 2; i >= 0; i--) {
+      layers.get(i).loadAxonSignal(layers.get(i + 1).getDendriteSignal()).computeDendriteSignal();
+    }
   }
 
   /**
    * Update the internal state of each neuron. See
    */
   public void updateNeurons() {
-    throw new UnsupportedOperationException();
+    for (int i = 1; i < layers.size() - 1; i++) {
+      layers.get(i).updateNeurons();
+    }
   }
 
   /**
    * Remove any layers that consist only of identity neurons.
    */
   public void contract() {
-    throw new UnsupportedOperationException();
+    List<Layer> newLayers = new ArrayList<>();
+    newLayers.add(inputLayer);
+    for (int i = 1; i < layers.size() - 1; i++) {
+      Layer current = layers.get(i);
+      if (!current.isOnlyIdentity()) {
+        newLayers.add(current);
+      }
+    }
+    newLayers.add(outputLayer);
   }
 
   /**
@@ -88,12 +111,8 @@ public class RangerNetwork implements Function<Vector, Vector> {
   }
 
   public Vector estimate(Vector v) {
-    clearActivations();
-    inputLayer.loadActivation(v);
-    for (int i = 1; i < layers.size(); i++) {
-      layers.get(i).loadStimulus(layers.get(i - 1).getActivation()).computeActivation();
-    }
-    return outputLayer.getActivation();
+    propagateForward(v);
+    return outputLayer.getAxonActivation();
   }
 
   public static RangerNetwork fromJson(Json json) {

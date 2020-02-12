@@ -2,6 +2,7 @@ package ranger.nn.ranger;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.List;
 import java.util.Random;
 
 import ox.Json;
@@ -12,23 +13,36 @@ public class Layer {
 
   private int size;
 
+  private List<Neuron> neurons;
+
   /**
    * These fields represent the temporary 'activation' state of the layer. They are undefined when the network is not
    * being used for forward/backpropagation.
    */
   private boolean isActive = false;
-  private Vector stimulus;
-  private Vector preActivation;
-  private Vector activation;
+
+  /**
+   * Forward prop stimuli & activations.
+   */
+  private Vector dendriteStimulus;
+  private Vector preAxonActivation;
+  private Vector axonActivation;
+
+  /**
+   * Backprop signals.
+   */
+  private Vector axonSignal;
+  private Vector preAxonSignal;
+  private Vector dendriteSignal;
 
   private ActivationFunction activationFunction = new ActivationFunction();
-
   private Vector bias;
   private Matrix incomingWeights;
 
   public Layer(int size) {
     this.size = size;
   }
+
 
   public Layer xavierInitialize(int incomingSize, Random random) {
     double stdDev = Math.sqrt(2.0 / incomingSize);
@@ -39,32 +53,75 @@ public class Layer {
 
   public Layer loadActivation(Vector activation) {
     this.isActive = true;
-    this.stimulus = activation;
-    this.preActivation = activation;
-    this.activation = activation;
+    this.dendriteStimulus = activation;
+    this.preAxonActivation = activation;
+    this.axonActivation = activation;
     return this;
   }
 
-  public Vector getActivation() {
-    return this.activation;
+  public Vector getAxonActivation() {
+    return this.axonActivation;
   }
 
-  public Layer loadStimulus(Vector activation) {
-    this.stimulus = activation;
-    this.preActivation = incomingWeights.multiply(stimulus).plus(bias);
+  public Layer loadDendriteStimulus(Vector activation) {
+    this.dendriteStimulus = activation;
+    this.preAxonActivation = incomingWeights.multiply(dendriteStimulus).plus(bias);
     return this;
   }
 
-  public void computeActivation() {
-    checkState(stimulus != null, "Cannot compute activation without stimulus.");
-    preActivation = incomingWeights.multiply(stimulus);
-    activation = activationFunction.apply(preActivation);
+  public void computeAxonActivation() {
+    checkState(dendriteStimulus != null, "Cannot compute activation without stimulus.");
+    preAxonActivation = incomingWeights.multiply(dendriteStimulus);
+    axonActivation = activationFunction.apply(preAxonActivation);
   }
 
   public void clearActivations() {
-    this.stimulus = null;
-    this.preActivation = null;
-    this.activation = null;
+    this.dendriteStimulus = null;
+    this.preAxonActivation = null;
+    this.axonActivation = null;
+  }
+
+  public Layer loadAxonSignal(Vector signal) {
+    this.axonSignal = signal;
+    return this;
+  }
+
+  public Layer computeDendriteSignal() {
+    throw new UnsupportedOperationException();
+  }
+
+  public Vector getDendriteSignal() {
+    return this.dendriteSignal;
+  }
+
+  /**
+   * Construct a new layer consisting of identity neurons back to the given layer.
+   */
+  public static Layer identityLayer(Layer layer) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Link my dendrites back to an identity copy of the layer I used to be linked back to.
+   */
+  public void linkBackToIdentity(Layer layer) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Update state, dendrites, bias for each neuron. Kill them off if they meet the criteria for death.
+   */
+  public void updateNeurons() {
+    throw new UnsupportedOperationException();
+  }
+
+  public boolean isOnlyIdentity() {
+    for (int i = 0; i < neurons.size(); i++) {
+      if (!neurons.get(i).isIdentity) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public static Layer fromJson(Json json) {
@@ -75,9 +132,9 @@ public class Layer {
 
     Json activity = json.getJson("activity");
     if (activity != null) {
-      ret.stimulus = Vector.fromJson(activity.getJson("stimulus"));
-      ret.preActivation = Vector.fromJson(activity.getJson("preActivation"));
-      ret.activation = Vector.fromJson(activity.getJson("activation"));
+      ret.dendriteStimulus = Vector.fromJson(activity.getJson("stimulus"));
+      ret.preAxonActivation = Vector.fromJson(activity.getJson("preActivation"));
+      ret.axonActivation = Vector.fromJson(activity.getJson("activation"));
     }
 
     return ret;
@@ -91,9 +148,9 @@ public class Layer {
         .with("activationFunction", activationFunction != null ? activationFunction.toJson() : null);
     if (isActive) {
       ret.with("activity", Json.object()
-          .with("stimulus", stimulus.toJson())
-          .with("preActivation", preActivation.toJson())
-          .with("activation", activation.toJson()));
+          .with("stimulus", dendriteStimulus.toJson())
+          .with("preActivation", preAxonActivation.toJson())
+          .with("activation", axonActivation.toJson()));
     }
     return ret;
   }
