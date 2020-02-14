@@ -22,7 +22,7 @@ import ranger.server.service.NeuralNetworkService;
 
 public class NeuralNetworkAPI extends Controller {
 
-  private static final int DEFAULT_SEED = 42;
+  private static final int DEFAULT_SEED = new Random().nextInt();
   private Random random = new Random(DEFAULT_SEED);
 
   private NeuralNetworkService neuralNetworkService = NeuralNetworkService.getInstance();
@@ -81,13 +81,18 @@ public class NeuralNetworkAPI extends Controller {
     Json json = request.getJson();
     Log.debug("\ntrainRanger Handler received JSON:");
     Log.debug(json);
-
     checkState(json.hasKey("neuralNetwork"));
     checkState(json.hasKey("datasetType"));
     RangerNetwork rangerNetwork = RangerNetwork.fromJson(json.getJson("neuralNetwork"));
     DatasetType datasetType = parseEnum(json.get("datasetType").toUpperCase(), DatasetType.class);
 
-    new RangerTrainer(rangerNetwork, datasetType).performTrainingStep();
+    Log.debug("\nrangerNetwork before the 'training step':");
+    Log.debug(rangerNetwork.toJson().prettyPrint());
+
+    new RangerTrainer(rangerNetwork, datasetType).performTrainingStep(random);
+
+    Log.debug("\nrangerNetwork at the end of the 'training step':");
+    Log.debug(rangerNetwork.toJson().prettyPrint());
 
     response.write(Json.object()
         .with("neuralNetwork", rangerNetwork.toJson())

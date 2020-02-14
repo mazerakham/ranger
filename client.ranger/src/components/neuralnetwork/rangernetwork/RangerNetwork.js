@@ -11,30 +11,42 @@ export default class RangerNetwork extends Component {
 
   constructor(props){
     super(props);
-    console.log("Constructing RangerNetwork.  props:");
-    console.log(props);
-    console.log("props.rangerNetwork:");
-    console.log(props.rangerNetwork);
-    this.coords = new RangerNetworkCoords();
-    this.layers = props.rangerNetwork.layers;
+    this.getNeuralNetworkInfo();
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    this.getNeuralNetworkInfo();
+  }
+
+  getNeuralNetworkInfo = () => {
+    this.layers = this.props.rangerNetwork.layers;
     this.numLayers = this.layers.length;
-    this.layerSizes = this.layers.map(layer => layer.size);
+    this.coords = new RangerNetworkCoords(this.numLayers);
+    this.layerSizes = this.layers.map(layer => layer.neurons.length);
   }
 
   renderLayers = () => {
-    return bRange(this.layers.length).map(i => {
-      return (
-        <RangerLayer key={i} layerSize={this.layerSizes[i]} coords={this.coords.getLayerEmbedding(i, this.numLayers, this.layerSizes[i])} /> 
-      );
-    })
+    let i = 0;
+    return this.layers.map(layer => {
+      return <RangerLayer 
+          key={Math.random()} 
+          layerSize={layer.neurons.length} 
+          coords={this.coords.getLayerEmbedding(i++, this.numLayers, layer.neurons.length)}
+          neurons={layer.neurons}
+      />
+    });
   }
 
   renderConnections =() => {
     return bRange(this.numLayers - 1).map(l => {
       return enumerate(cartesian(bRange(this.layerSizes[l]), bRange(this.layerSizes[l+1]))).map(([key, [i,j]]) => {
-        return (
-          <NeuronConnection key={key} coords={this.coords.getConnectionCoords(l, i, j, this.numLayers, this.layerSizes)} />
-        )
+        if (this.layers[l+1].neurons[j].dendriteMask.mask.includes(i)) {
+          return (
+            <NeuronConnection key={Math.random()} coords={this.coords.getConnectionCoords(l, i, j, this.numLayers, this.layerSizes)} />
+          );
+        } else {
+          return null;
+        }
       });
     })
   }
@@ -59,7 +71,7 @@ export class RangerNetworkCoords extends Coordinates {
     this.h = 10;
   }
 
-  getLayerEmbedding = (i, layerSize) => {
+  getLayerEmbedding = (i, numLayers, layerSize) => {
     return {
       x: 1 + 2 * i,
       y: 4.5 - layerSize / 2,

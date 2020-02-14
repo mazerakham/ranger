@@ -13,6 +13,17 @@ import java.util.Random;
 public class RangerMath {
 
   /**
+   * Return the list of ints [0 ... max).
+   */
+  public static List<Integer> range(int max) {
+    ArrayList<Integer> ret = new ArrayList<>();
+    for (int i = 0; i < max; i++) {
+      ret.add(i);
+    }
+    return ret;
+  }
+
+  /**
    * Fisher-Yates shuffle, gets random set of N longs from large interval of size M for O(N) space and time.
    */
   public static Collection<Long> getRandomBagOfLongs(long min, long max, long numResults, Random r) {

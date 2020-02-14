@@ -15,7 +15,6 @@ export default class SessionPageContainer extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props.sessionOptions);
     this.rangerClient.newNeuralNetwork(this.props.sessionOptions.modelType, this.props.sessionOptions.neuralNetworkSpecs)
         .then(this.onNeuralNetworkCreated);
     this.rangerClient.desiredPlot(this.props.sessionOptions.datasetType)
@@ -34,23 +33,23 @@ export default class SessionPageContainer extends Component {
   }
 
   onDesiredPlotCreated = json => {
-    console.log("Created desired plot:");
-    console.log(json.plot);
     this.setState({
       desiredPlot: json.plot
     })
   }
 
   onNeuralFunctionPlotCreated = json => {
-    console.log("Created neural function plot:");
-    console.log(json.plot);
     this.setState({
       plot: json.plot,
       stage: "finished"
     })
   }
 
-  updateNeuralNetwork = neuralNetwork => this.setState({neuralNetwork: neuralNetwork});
+  updateNeuralNetwork = neuralNetwork => {
+    console.log("Updating neural network:");
+    console.log(neuralNetwork);
+    this.setState({neuralNetwork: neuralNetwork});
+  }
 
   updatePlot = plot => this.setState({plot: plot});
 
@@ -68,15 +67,11 @@ export default class SessionPageContainer extends Component {
           <SessionPage 
               sessionOptions={this.props.sessionOptions}
               modelType={this.props.sessionOptions.modelType}
-
               neuralNetwork={this.state.neuralNetwork}
               updateNeuralNetwork={this.updateNeuralNetwork}
-              
               desiredPlot={this.state.desiredPlot}
-
               plot={this.state.plot}
               updatePlot={this.updatePlot}
-
               backToHome={this.backToHome}
           /> 
         )
@@ -84,5 +79,4 @@ export default class SessionPageContainer extends Component {
         throw new Error("Did not recognize stage " + this.state.stage);
     }
   }
-
 }

@@ -2,6 +2,7 @@ package ranger.nn.ranger;
 
 import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Functions.map;
+import static ox.util.Functions.sum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.function.Function;
 import com.google.common.collect.Lists;
 
 import ox.Json;
+import ox.Log;
 import ranger.math.Vector;
 
 public class RangerNetwork implements Function<Vector, Vector> {
@@ -22,6 +24,8 @@ public class RangerNetwork implements Function<Vector, Vector> {
   private List<Layer> layers = Lists.newArrayList();
   private Layer outputLayer;
 
+  NeuronGenerator neuronGenerator = new NeuronGenerator();
+
   public RangerNetwork(int inSize, int outSize) {
     this.inSize = inSize;
     this.outSize = outSize;
@@ -32,8 +36,8 @@ public class RangerNetwork implements Function<Vector, Vector> {
    * layer to output layer.
    */
   public RangerNetwork initialize(Random random) {
-    inputLayer = new Layer(inSize);
-    outputLayer = new Layer(outSize).xavierInitialize(inSize, random);
+    inputLayer = Layer.inputLayer(inSize);
+    outputLayer = Layer.outputLayer(inSize, outSize, inputLayer).initializeDendritesFull(inputLayer, random);
     layers.add(inputLayer);
     layers.add(outputLayer);
     return this;
@@ -55,17 +59,25 @@ public class RangerNetwork implements Function<Vector, Vector> {
   /**
    * Randomly insert neurons in the layers with random choice of dendrites.
    */
-  public void addNewNeurons() {
-    new NeuronGenerator(this).generateNeurons();
+  public void growNewNeurons(Random random) {
+    double totalWeight = sum(layers, l -> l.size() + 1) - inSize - outSize;
+    for (int i = 1; i < layers.size() - 1; i++) {
+      neuronGenerator.growNewNeurons(layers, totalWeight, i, random);
+    }
   }
 
   /**
    * Forward propagate the input through the network, computing pre-activations and activations throughout.
    */
   public void propagateForward(Vector input) {
-    inputLayer.loadActivation(input);
+    inputLayer.loadAxonActivation(SignalVector.saturatedSignal(input));
     for (int i = 1; i < layers.size(); i++) {
-      layers.get(i).loadDendriteStimulus(layers.get(i - 1).getAxonActivation()).computeAxonActivation();
+      try {
+        layers.get(i).loadDendriteStimulus(layers.get(i - 1).getAxonActivation()).computeAxonActivation();
+      } catch (Exception e) {
+        Log.debug("We are here.");
+      }
+
     }
   }
 
@@ -73,9 +85,13 @@ public class RangerNetwork implements Function<Vector, Vector> {
    * Backward propagate the label through the network, computing error gradients of every kind.
    */
   public void propagateBackward(Vector label) {
-    outputLayer.loadAxonSignal(label).computeDendriteSignal();
-    for (int i = layers.size() - 2; i >= 0; i--) {
-      layers.get(i).loadAxonSignal(layers.get(i + 1).getDendriteSignal()).computeDendriteSignal();
+    int L = layers.size();
+    outputLayer.loadAxonSignal(label.minus(outputLayer.getAxonActivation().values()))
+        .computeDendriteSignal(layers.get(L - 2));
+    for (int i = L - 2; i >= 1; i--) {
+      layers.get(i)
+          .loadAxonSignal(layers.get(i + 1).getDendriteSignal())
+          .computeDendriteSignal(layers.get(i - 1));
     }
   }
 
@@ -84,7 +100,7 @@ public class RangerNetwork implements Function<Vector, Vector> {
    */
   public void updateNeurons() {
     for (int i = 1; i < layers.size() - 1; i++) {
-      layers.get(i).updateNeurons();
+      layers.get(i).updateNeurons(layers.get(i - 1), layers.get(i + 1));
     }
   }
 
@@ -101,6 +117,7 @@ public class RangerNetwork implements Function<Vector, Vector> {
       }
     }
     newLayers.add(outputLayer);
+    this.layers = newLayers;
   }
 
   /**
@@ -110,9 +127,12 @@ public class RangerNetwork implements Function<Vector, Vector> {
     layers.forEach(Layer::clearActivations);
   }
 
+  /**
+   * Gets the output of this neural network, given the input. 
+   */
   public Vector estimate(Vector v) {
     propagateForward(v);
-    return outputLayer.getAxonActivation();
+    return outputLayer.getAxonActivation().values();
   }
 
   public static RangerNetwork fromJson(Json json) {

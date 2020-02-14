@@ -10,18 +10,26 @@ export default class RangerLayer extends Component {
 
   constructor(props) {
     super(props);
-    console.log("Ranger Layer constructing.  here are the props.");
-    console.log(props);
-    this.coords = new RangerLayerCoords(props.layerSize);
+    this.coords = new RangerLayerCoords(this.props.layerSize);
+  }
+
+  componentDidupdate(oldProps) {
+    this.forceUpdate();
+  }
+
+  setCoords = () => {
+    this.coords = new RangerLayerCoords(this.props.layerSize);
   }
 
   renderNeurons = () => {
-    return bRange(this.props.layerSize).map(i => {
+    let i = 0;
+    return this.props.neurons.map(neuron => {
       return (
-        <Neuron key={i} coords={this.coords.getNeuronCoords(i)} />
+        <Neuron key={Math.random()} coords={this.coords.getNeuronCoords(i++)} type={neuron.type} />
       )
-    });    
+    })
   }
+
   render() {
     return (
       <SVG parentCoords={this.props.coords} coords={this.coords}>

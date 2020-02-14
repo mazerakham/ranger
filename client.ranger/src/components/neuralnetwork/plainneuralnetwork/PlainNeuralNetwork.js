@@ -11,9 +11,9 @@ export default class PlainNeuralNetwork extends Component {
 
   constructor(props) {
     super(props);
-    this.coords = new PlainNeuralNetworkCoords();
     this.numLayers = props.neuralNetwork.specs.numLayers;
     this.layerSizes = props.neuralNetwork.specs.layerSizes;
+    this.coords = new PlainNeuralNetworkCoords(this.numLayers);
   }
 
   renderLayers = () => {
@@ -36,7 +36,7 @@ export default class PlainNeuralNetwork extends Component {
 
   render() {
     return (
-      <SVG parentCoords={SVG.rootCoords()} coords={new PlainNeuralNetworkCoords()}>
+      <SVG parentCoords={SVG.rootCoords()} coords={this.coords}>
         {this.renderConnections()}
         {this.renderLayers()}
       </SVG>
@@ -45,20 +45,20 @@ export default class PlainNeuralNetwork extends Component {
 }
 
 class PlainNeuralNetworkCoords extends Coordinates {
-  constructor() {
+  constructor(numLayers) {
     super();
     this.x = 0;
     this.y = 0;
-    this.w = 10;
+    this.w = Math.max(3+2*numLayers, 10);
     this.h = 10;
   }
 
   getLayerEmbedding = (i, layerSize) => {
     return {
       x: 1 + 2 * i,
-      y: 4.5 - layerSize / 2,
+      y: Math.max(4.5 - layerSize / 2, 0),
       w: 1,
-      h: layerSize
+      h: Math.min(layerSize, 10)
     }
   }
 

@@ -54,6 +54,14 @@ public class Vector implements Cloneable {
     this(map(objects, mapping));
   }
 
+  public static Vector fromFunction(int size, Function<Integer, Double> mapping) {
+    Vector ret = new Vector();
+    for (int i = 0; i < size; i++) {
+      ret.addEntry(mapping.apply(i));
+    }
+    return ret;
+  }
+
   public static Vector fromJson(Json json) {
     if (json == null) {
       return null;
@@ -139,6 +147,10 @@ public class Vector implements Cloneable {
 
   public void setEntry(int i, double val) {
     entries.set(i, val);
+  }
+
+  public void remove(int i) {
+    entries.remove(i);
   }
 
   public int size() {
