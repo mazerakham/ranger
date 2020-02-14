@@ -1,12 +1,12 @@
 package ranger.nn.ranger;
 
-import java.util.Random;
+import static com.google.common.base.Preconditions.checkState;
 
-import com.google.common.collect.Lists;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import ox.Json;
-import ox.Log;
-import ranger.math.Vector;
 
 public class Neuron {
 
@@ -40,38 +40,47 @@ public class Neuron {
    */
   public static final double DENDRITE_GROWTH_RATE = 0.3;
 
+  /**
+   * INPUT, HIDDEN, IDENTITY, OUTPUT have different behaviors.
+   */
   public NeuronType type;
-  public Vector dendrites;
-  public DendriteMask dendriteMask;
+
+  /**
+   * Used by dendrites to identity the neurons they're listening to.
+   */
+  public UUID uuid;
+
+  public Dendrites dendrites;
   public double bias;
   public ActivationFunction activationFunction;
   public double s; // The State-Value - represents the "health" of the neuron.
 
   // Forward prop.
-  private Vector dendriteStimulus; // Stimulus at the dendrites, filtered by this neuron's own signal strength.
+  private SignalVector dendriteStimulus; // Stimulus at the dendrites, filtered by this neuron's own signal strength.
   private Double preActivation;
   private Signal activation; // A pair consisting of a value and signal strength.
 
   // Backward prop.
   private Double axonSignal; // Stimulus at the axon.
   private Double preAxonSignal;
-  private Vector dendriteSignal; // Back-prop signal, scaled down by this neuron's signal strength.
+  private Map<UUID, Double> dendriteSignal; // Back-prop signal, scaled down by this neuron's signal strength.
 
   public static Neuron inputNeuron() {
     Neuron ret = new Neuron();
     ret.type = NeuronType.INPUT;
     ret.s = 1;
+    ret.uuid = UUID.randomUUID();
     return ret;
   }
 
-  public static Neuron identityNeuron(int i, double s) {
+  public static Neuron identityNeuron(Neuron neuron) {
     Neuron ret = new Neuron();
+    ret.uuid = neuron.uuid;
     ret.type = NeuronType.IDENTITY;
-    ret.dendrites = new Vector(1.0);
+    ret.dendrites = new Dendrites().add(neuron.uuid, 1.0);
     ret.bias = 0;
     ret.activationFunction = ActivationFunction.IDENTITY;
-    ret.dendriteMask = new DendriteMask(Lists.newArrayList(i));
-    ret.s = s;
+    ret.s = neuron.s;
     return ret;
   }
 
@@ -80,52 +89,46 @@ public class Neuron {
     ret.type = NeuronType.HIDDEN;
     ret.activationFunction = ActivationFunction.RELU;
     ret.s = SIGMA_0;
+    ret.uuid = UUID.randomUUID();
     return ret;
   }
 
   public static Neuron outputNeuron(int inSize) {
     Neuron ret = new Neuron();
-    double stdDev = Math.sqrt(2.0 / inSize);
     ret.type = NeuronType.OUTPUT;
     ret.bias = 0;
     ret.activationFunction = ActivationFunction.IDENTITY;
+    ret.uuid = UUID.randomUUID();
     ret.s = 1;
     return ret;
   }
 
-  public void initializeDendrites(DendriteMask mask, Random random) {
-    if (mask.size() == 0) {
-      this.dendriteMask = mask;
-      this.dendrites = new Vector();
-      return;
-    }
-    double stdDev = Math.sqrt(2 / mask.size());
-    this.dendrites = Vector.fromFunction(mask.size(), i -> random.nextGaussian() * stdDev);
-    this.dendriteMask = mask;
-  }
-
-  public void maybeGrowDendritesTo(int predecessorIndex, Random random) {
+  public void maybeGrowDendritesTo(UUID predecessorUUID, Random random) {
     double proba;
     if (this.type == NeuronType.OUTPUT) {
       proba = 1.0;
     } else if (this.type == NeuronType.IDENTITY) {
       proba = 0.0;
     } else {
-      proba = this.type == NeuronType.OUTPUT ? 1.0 : DENDRITE_GROWTH_RATE / this.dendriteMask.size();
+      proba = this.type == NeuronType.OUTPUT ? 1.0 : DENDRITE_GROWTH_RATE / this.dendrites.size();
     }
 
     if (random.nextDouble() < proba) {
-      this.dendriteMask.add(predecessorIndex);
-      this.dendrites.addEntry(0.0);
+      this.dendrites.add(predecessorUUID, 0.0);
     }
   }
 
+  public void loadInputActivation(double d) {
+    checkState(this.type == NeuronType.INPUT);
+    this.activation = new Signal(d, 1.0);
+  }
+
   public void loadDendriteStimulus(SignalVector stimulus) {
-    this.dendriteStimulus = getStimulusFromSignal(dendriteMask.mask(stimulus));
+    this.dendriteStimulus = stimulus;
   }
 
   public Signal computeAxonActivation() {
-    preActivation = dendrites.dot(dendriteStimulus) + bias;
+    preActivation = dendrites.computeAxonPreactivation(this.dendriteStimulus, this.getSignalStrength()) + bias;
     activation = new Signal(this.activationFunction.apply(preActivation), getSignalStrength());
     return activation;
   }
@@ -134,10 +137,13 @@ public class Neuron {
     this.axonSignal = signal;
   }
 
-  public Vector computeDendriteSignal() {
+  /**
+   * Backprop signal, returned as map to identify which neurons get which signals. For now, we backprop scalars rather
+   * than full-fledged Signals.
+   */
+  public Map<UUID, Double> computeDendriteSignal() {
     preAxonSignal = this.activationFunction.derivativeAt(this.preActivation);
-    return dendriteSignal = Vector.fromFunction(dendriteMask.size(), i -> preAxonSignal * dendrites.getEntry(i))
-        .scale(getSignalStrength());
+    return dendriteSignal = dendrites.computeDendriteSignal(preAxonSignal, getSignalStrength());
   }
 
   /**
@@ -147,23 +153,14 @@ public class Neuron {
    */
   public void update() {
     double utility = activation.value * axonSignal;
-    s = Math.min(s + UTILITY_COEFFICIENT * utility - DENDRITE_PENALTY * (1 + dendriteMask.size()), 1.0);
-    Vector dW = dendriteSignal.otimes(dendriteStimulus);
-    dendrites = dendrites.minus(dW.scale(getLearningRate()));
+    s = Math.min(s + UTILITY_COEFFICIENT * utility - DENDRITE_PENALTY * (1 + dendrites.size()), 1.0);
+    dendrites.update(dendriteSignal, getLearningRate());
     double db = this.preAxonSignal;
     bias = bias - db * getLearningRate();
   }
 
-  public void remapDendrites(int neuronNumber) {
-    Log.debug("Neuron with dendriteMask %s remapping dendrites for neuron number %d", this.dendriteMask.toJson(),
-        neuronNumber);
-    if (dendriteMask.contains(neuronNumber)) {
-      int index = dendriteMask.getIndex(neuronNumber);
-      this.dendrites.remove(index);
-    }
-
-    dendriteMask.removeAndRemap(neuronNumber);
-    Log.debug("Dendrite mask after: %s", this.dendriteMask.toJson());
+  public void removeDendritesTo(UUID uuid) {
+    this.dendrites.remove(uuid);
   }
 
   public boolean isDead() {
@@ -184,31 +181,21 @@ public class Neuron {
     }
   }
 
-  // Algorithm described in:
-  // https://docs.google.com/document/d/1aoc5v1AYzr4vm1qP1HU_QrW-s04_xY-pVQVDx8XpXCg/edit#heading=h.luoiw41gac4j
-  private Vector getStimulusFromSignal(SignalVector signalVector) {
-    return Vector.fromFunction(signalVector.size(), i -> getStimulusFromSignal(signalVector.signals.get(i)));
-  }
-
-  private double getStimulusFromSignal(Signal signal) {
-    return signal.value * (1 - Math.max(this.getSignalStrength() - signal.strength, 0));
-  }
-
   public static Neuron fromJson(Json json) {
     Neuron ret = new Neuron();
     ret.type = json.getEnum("type", NeuronType.class);
-    ret.dendriteMask = DendriteMask.fromJson(json.getJson("dendriteMask"));
-    ret.dendrites = Vector.fromJson(json.getJson("dendrites"));
+    ret.dendrites = Dendrites.fromJson(json.getJson("dendrites"));
     ret.bias = json.getDouble("bias");
     ret.s = json.getDouble("s");
     ret.activationFunction = ActivationFunction.fromJson(json.get("activationFunction"));
+    ret.uuid = UUID.fromString(json.get("uuid"));
     return ret;
   }
 
   public Json toJson() {
     return Json.object()
+        .with("uuid", uuid.toString())
         .with("type", type)
-        .with("dendriteMask", dendriteMask == null ? null : dendriteMask.toJson())
         .with("dendrites", dendrites == null ? null : dendrites.toJson())
         .with("bias", bias)
         .with("s", s)

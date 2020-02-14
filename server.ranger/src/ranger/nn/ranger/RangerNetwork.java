@@ -12,7 +12,6 @@ import java.util.function.Function;
 import com.google.common.collect.Lists;
 
 import ox.Json;
-import ox.Log;
 import ranger.math.Vector;
 
 public class RangerNetwork implements Function<Vector, Vector> {
@@ -37,7 +36,10 @@ public class RangerNetwork implements Function<Vector, Vector> {
    */
   public RangerNetwork initialize(Random random) {
     inputLayer = Layer.inputLayer(inSize);
-    outputLayer = Layer.outputLayer(inSize, outSize, inputLayer).initializeDendritesFull(inputLayer, random);
+    outputLayer = Layer.outputLayer(inSize, outSize, inputLayer);
+    for (Neuron neuron : outputLayer.neurons.values()) {
+      neuron.dendrites = Dendrites.randomDendrites(inputLayer, 1.0, random);
+    }
     layers.add(inputLayer);
     layers.add(outputLayer);
     return this;
@@ -70,14 +72,9 @@ public class RangerNetwork implements Function<Vector, Vector> {
    * Forward propagate the input through the network, computing pre-activations and activations throughout.
    */
   public void propagateForward(Vector input) {
-    inputLayer.loadAxonActivation(SignalVector.saturatedSignal(input));
+    inputLayer.loadInputAxonActivation(input);
     for (int i = 1; i < layers.size(); i++) {
-      try {
-        layers.get(i).loadDendriteStimulus(layers.get(i - 1).getAxonActivation()).computeAxonActivation();
-      } catch (Exception e) {
-        Log.debug("We are here.");
-      }
-
+      layers.get(i).loadDendriteStimulus(layers.get(i - 1).getAxonActivation()).computeAxonActivation();
     }
   }
 
@@ -86,11 +83,10 @@ public class RangerNetwork implements Function<Vector, Vector> {
    */
   public void propagateBackward(Vector label) {
     int L = layers.size();
-    outputLayer.loadAxonSignal(label.minus(outputLayer.getAxonActivation().values()))
+    outputLayer.loadOutputAxonSignal(label.minus(outputLayer.getAxonActivation().values()))
         .computeDendriteSignal(layers.get(L - 2));
     for (int i = L - 2; i >= 1; i--) {
-      layers.get(i)
-          .loadAxonSignal(layers.get(i + 1).getDendriteSignal())
+      layers.get(i).loadAxonSignal(layers.get(i + 1).getDendriteSignal())
           .computeDendriteSignal(layers.get(i - 1));
     }
   }
