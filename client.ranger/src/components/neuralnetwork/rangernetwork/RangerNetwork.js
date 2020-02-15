@@ -22,33 +22,59 @@ export default class RangerNetwork extends Component {
     this.layers = this.props.rangerNetwork.layers;
     this.numLayers = this.layers.length;
     this.coords = new RangerNetworkCoords(this.numLayers);
-    this.layerSizes = this.layers.map(layer => layer.neurons.length);
+    this.layerSizes = this.layers.map(layer => Object.keys(layer.neurons).length);
+
+    // Enumerate the neurons in each layer.
+    for (let layer of this.layers) {
+      try {
+        for (let [i, [uuid, neuron]] of enumerate(Object.entries(layer.neurons))) {
+          layer.neurons[uuid].position = i;
+        }
+      } catch (e) {
+        console.log("Layer");
+        console.log(layer);
+        throw e;
+      }
+    }
   }
 
   renderLayers = () => {
-    let i = 0;
-    return this.layers.map(layer => {
+    return enumerate(this.layers).map(([i,layer]) => {
       return <RangerLayer 
           key={Math.random()} 
-          layerSize={layer.neurons.length} 
-          coords={this.coords.getLayerEmbedding(i++, this.numLayers, layer.neurons.length)}
+          layerSize={Object.keys(layer.neurons).length} 
+          coords={this.coords.getLayerEmbedding(i, this.numLayers, Object.keys(layer.neurons).length)}
           neurons={layer.neurons}
       />
     });
   }
 
-  renderConnections =() => {
-    return bRange(this.numLayers - 1).map(l => {
-      return enumerate(cartesian(bRange(this.layerSizes[l]), bRange(this.layerSizes[l+1]))).map(([key, [i,j]]) => {
-        if (this.layers[l+1].neurons[j].dendriteMask.mask.includes(i)) {
-          return (
-            <NeuronConnection key={Math.random()} coords={this.coords.getConnectionCoords(l, i, j, this.numLayers, this.layerSizes)} />
+  renderConnections = () => {
+    let ret = [];
+    for (let l = 0; l < this.numLayers - 1; l++) {
+      let layer1 = this.layers[l];
+      let layer1Size = this.layerSizes[l];
+      let layer2 = this.layers[l+1];
+      let layer2Size = this.layerSizes[l+1];
+      for (let [j, [uuid2, neuron2]] of enumerate(Object.entries(layer2.neurons))) {
+        for (let [i, [uuid1, weight]] of enumerate(Object.entries(neuron2.dendrites))) {
+          ret.push(
+            <NeuronConnection 
+                key={Math.random()} 
+                coords={this.coords.getConnectionCoords(
+                    l,
+                    layer1.neurons[uuid1].position,
+                    neuron2.position,
+                    this.numLayers,
+                    this.layerSizes
+                )} 
+            />
           );
-        } else {
-          return null;
         }
-      });
-    })
+      }
+      
+    }
+    return ret;
   }
 
   render() {

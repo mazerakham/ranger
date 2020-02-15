@@ -23,7 +23,7 @@ export default class RangerLayer extends Component {
 
   renderNeurons = () => {
     let i = 0;
-    return this.props.neurons.map(neuron => {
+    return Object.entries(this.props.neurons).map(([uuid,neuron]) => {
       return (
         <Neuron key={Math.random()} coords={this.coords.getNeuronCoords(i++)} type={neuron.type} />
       )

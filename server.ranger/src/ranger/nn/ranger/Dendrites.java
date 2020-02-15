@@ -17,7 +17,7 @@ public class Dendrites {
 
   public static Dendrites randomDendrites(Layer prev, double dendriteSparsityConstant, Random random) {
     Dendrites ret = new Dendrites();
-    double proba = dendriteSparsityConstant / (prev.neurons.size() + 1);
+    double proba = dendriteSparsityConstant;
     double stdDev = 1.0; // TODO: This needs to be changed to sqrt( 2 / # of neurons).
     for (Neuron neuron : prev.neurons.values()) {
       if (random.nextDouble() < proba) {
@@ -37,13 +37,14 @@ public class Dendrites {
     double ret = 0.0;
     for (Entry<UUID, Double> dendrite : dendrites.entrySet()) {
       Signal signal = signalVector.signals.get(dendrite.getKey());
-      ret += signal.value * (1 - Math.max(receiverSignalStrength - signal.strength, 0));
+      checkState(signal != null);
+      ret += signal.value * dendrite.getValue() * (1.0 - Math.max(receiverSignalStrength - signal.strength, 0.0));
     }
     return ret;
   }
 
-  public Map<UUID, Double> computeDendriteSignal(double preAxonSignal, double signalStrength) {
-    Map<UUID, Double> ret = Maps.newHashMap();
+  public NeuronMap computeDendriteSignal(double preAxonSignal, double signalStrength) {
+    NeuronMap ret = new NeuronMap();
     for (Entry<UUID, Double> dendrite : dendrites.entrySet()) {
       ret.put(dendrite.getKey(), dendrite.getValue() * preAxonSignal * signalStrength);
     }
@@ -52,9 +53,10 @@ public class Dendrites {
 
   public void update(Map<UUID, Double> dendriteSignal, double learningRate) {
     for (Entry<UUID, Double> singleDendriteSignal : dendriteSignal.entrySet()) {
-      checkState(dendrites.containsKey(singleDendriteSignal.getKey()));
+      // It is possible that the dendrite was deleted, in which case the signal for that dendrite is ignored. Hence,
+      // "only compute If Present".
       dendrites.computeIfPresent(singleDendriteSignal.getKey(),
-          (wutev, oldVal) -> oldVal - learningRate * singleDendriteSignal.getValue());
+          (uuid, oldVal) -> oldVal - learningRate * singleDendriteSignal.getValue());
     }
   }
 

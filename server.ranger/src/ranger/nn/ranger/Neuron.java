@@ -2,7 +2,6 @@ package ranger.nn.ranger;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -13,7 +12,7 @@ public class Neuron {
   /**
    * Starting state for new hidden neurons.
    */
-  public static final double SIGMA_0 = 0.25;
+  public static final double SIGMA_0 = 0.5;
 
   /**
    * The state-value threshold past which a hidden neuron starts to have signal strength.
@@ -33,12 +32,17 @@ public class Neuron {
   /**
    * How much this neuron pays for each dendrite at *every* step.
    */
-  public static final double DENDRITE_PENALTY = 0.02;
+  public static final double DENDRITE_PENALTY = 0.002;
+
+  /**
+   * Penalty paid by an identity neuron for being alive.
+   */
+  public static final double IDENTITY_PENALTY = 0.001;
 
   /**
    * Dendrite Growth Rate
    */
-  public static final double DENDRITE_GROWTH_RATE = 0.3;
+  public static final double DENDRITE_GROWTH_RATE = 0.8;
 
   /**
    * INPUT, HIDDEN, IDENTITY, OUTPUT have different behaviors.
@@ -63,7 +67,7 @@ public class Neuron {
   // Backward prop.
   private Double axonSignal; // Stimulus at the axon.
   private Double preAxonSignal;
-  private Map<UUID, Double> dendriteSignal; // Back-prop signal, scaled down by this neuron's signal strength.
+  private NeuronMap dendriteSignal; // Back-prop signal, scaled down by this neuron's signal strength.
 
   public static Neuron inputNeuron() {
     Neuron ret = new Neuron();
@@ -110,7 +114,8 @@ public class Neuron {
     } else if (this.type == NeuronType.IDENTITY) {
       proba = 0.0;
     } else {
-      proba = this.type == NeuronType.OUTPUT ? 1.0 : DENDRITE_GROWTH_RATE / this.dendrites.size();
+      checkState(this.type == NeuronType.HIDDEN);
+      proba = DENDRITE_GROWTH_RATE;
     }
 
     if (random.nextDouble() < proba) {
@@ -141,8 +146,8 @@ public class Neuron {
    * Backprop signal, returned as map to identify which neurons get which signals. For now, we backprop scalars rather
    * than full-fledged Signals.
    */
-  public Map<UUID, Double> computeDendriteSignal() {
-    preAxonSignal = this.activationFunction.derivativeAt(this.preActivation);
+  public NeuronMap computeDendriteSignal() {
+    preAxonSignal = this.axonSignal * this.activationFunction.derivativeAt(this.preActivation);
     return dendriteSignal = dendrites.computeDendriteSignal(preAxonSignal, getSignalStrength());
   }
 
@@ -152,11 +157,24 @@ public class Neuron {
    * https://docs.google.com/document/d/1aoc5v1AYzr4vm1qP1HU_QrW-s04_xY-pVQVDx8XpXCg/edit#heading=h.bc6io8jn10hw
    */
   public void update() {
-    double utility = activation.value * axonSignal;
-    s = Math.min(s + UTILITY_COEFFICIENT * utility - DENDRITE_PENALTY * (1 + dendrites.size()), 1.0);
-    dendrites.update(dendriteSignal, getLearningRate());
-    double db = this.preAxonSignal;
-    bias = bias - db * getLearningRate();
+    if (this.type == NeuronType.HIDDEN || this.type == NeuronType.IDENTITY) {
+      double utility = activation.value * axonSignal;
+      if (this.type == NeuronType.HIDDEN) {
+        s = Math.min(s + UTILITY_COEFFICIENT * utility - DENDRITE_PENALTY * (1 + dendrites.size()), 1.0);
+      } else {
+        checkState(this.type == NeuronType.IDENTITY);
+        s = Math.min(s + UTILITY_COEFFICIENT * utility - IDENTITY_PENALTY, 1.0);
+        if (dendrites.size() == 0) {
+          // When an identity neuron's dendrite dies, it should also die.
+          s = -2.0; // hackhack, makes sure it get marked for deletion.
+        }
+      }
+    }
+    if (this.type == NeuronType.HIDDEN || this.type == NeuronType.OUTPUT) {
+      dendrites.update(dendriteSignal, getLearningRate());
+      double db = this.preAxonSignal;
+      bias = bias - db * getLearningRate();
+    }
   }
 
   public void removeDendritesTo(UUID uuid) {

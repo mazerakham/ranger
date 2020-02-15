@@ -83,11 +83,11 @@ public class RangerNetwork implements Function<Vector, Vector> {
    */
   public void propagateBackward(Vector label) {
     int L = layers.size();
-    outputLayer.loadOutputAxonSignal(label.minus(outputLayer.getAxonActivation().values()))
-        .computeDendriteSignal(layers.get(L - 2));
+    outputLayer.loadOutputAxonSignal(label.minus(outputLayer.getAxonActivationAsOutput()))
+        .computeDendriteSignal();
     for (int i = L - 2; i >= 1; i--) {
       layers.get(i).loadAxonSignal(layers.get(i + 1).getDendriteSignal())
-          .computeDendriteSignal(layers.get(i - 1));
+          .computeDendriteSignal();
     }
   }
 
@@ -96,8 +96,9 @@ public class RangerNetwork implements Function<Vector, Vector> {
    */
   public void updateNeurons() {
     for (int i = 1; i < layers.size() - 1; i++) {
-      layers.get(i).updateNeurons(layers.get(i - 1), layers.get(i + 1));
+      layers.get(i).updateNeurons(layers.get(i+1));
     }
+    outputLayer.updateNeurons(null);
   }
 
   /**
@@ -128,7 +129,7 @@ public class RangerNetwork implements Function<Vector, Vector> {
    */
   public Vector estimate(Vector v) {
     propagateForward(v);
-    return outputLayer.getAxonActivation().values();
+    return outputLayer.getAxonActivationAsOutput();
   }
 
   public static RangerNetwork fromJson(Json json) {

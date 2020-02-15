@@ -9,4 +9,9 @@ public class Signal {
     this.value = value;
     this.strength = strength;
   }
+
+  @Override
+  public String toString() {
+    return String.format("%.2f, %.2f", value, strength);
+  }
 }

@@ -25,12 +25,18 @@ public class RangerTrainer {
     Vector label = labeledDatapoint.label;
 
     Log.debug(rangerNetwork.toJson().prettyPrint());
+    try {
     rangerNetwork.expand();
     rangerNetwork.growNewNeurons(random);
     rangerNetwork.propagateForward(datapoint);
     rangerNetwork.propagateBackward(label);
     rangerNetwork.updateNeurons();
     rangerNetwork.contract();
+    } catch (Exception e) {
+      Log.debug("The error happened with ranger network in this state:");
+      Log.debug(rangerNetwork.toJson().prettyPrint());
+      throw e;
+    }
     Log.debug("\n\nAfter training:\n\n");
     Log.debug(rangerNetwork.toJson().prettyPrint());
   }

@@ -13,6 +13,7 @@ import ranger.arch.PlainNeuralNetworkSpecs;
 import ranger.data.Batcher;
 import ranger.data.sets.Dataset;
 import ranger.data.sets.Dataset.DatasetType;
+import ranger.math.Vector;
 import ranger.nn.plain.PlainNeuralNetwork;
 import ranger.nn.plot.NeuralFunctionPlot;
 import ranger.nn.ranger.RangerNetwork;
@@ -49,6 +50,8 @@ public class NeuralNetworkAPI extends Controller {
       response.write(Json.object().with("neuralNetwork", neuralNetwork.toJson()));
     } else if (modelType.equals("ranger")) {
       RangerNetwork rangerNetwork = new RangerNetwork(2, 1).initialize(random);
+      Log.debug("Created new Ranger Network:");
+      Log.debug(rangerNetwork.toJson().prettyPrint());
       response.write(Json.object().with("neuralNetwork", rangerNetwork.toJson()));
     } else {
       throw new RuntimeException("Could not recognize modelType: " + modelType);
@@ -113,6 +116,8 @@ public class NeuralNetworkAPI extends Controller {
       response.write(Json.object().with("plot", plot.toJson()));
     } else if (modelType.equals("ranger")) {
       RangerNetwork rangerNetwork = RangerNetwork.fromJson(json.getJson("neuralNetwork"));
+      Log.debug(rangerNetwork.apply(new Vector(1.0, 0.0)));
+      Log.debug(rangerNetwork.apply(new Vector(0.0, 1.0)));
       NeuralFunctionPlot plot = NeuralFunctionPlot.plot(rangerNetwork, datasetType);
       response.write(Json.object().with("plot", plot.toJson()));
     } else {
