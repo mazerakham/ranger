@@ -4,6 +4,8 @@ import ControlSectionContainer from  './elements/ControlSectionContainer';
 import NeuralFunctionPlotContainer from  './elements/NeuralFunctionPlotContainer';
 import ModelVisualizationContainer from  './elements/ModelVisualizationContainer';
 import DesiredFunctionPlotContainer from  './elements/DesiredFunctionPlotContainer';
+import ControlInputContainer from './elements/ControlInputContainer';
+import NeuronDetailContainer from './elements/NeuronDetailContainer';
 
 
 import './Session.css';
@@ -18,10 +20,16 @@ export default class SessionPage extends Component {
           <h1>Session</h1>
         </div>
         <div className="Session Row">
-          <ModelVisualizationContainer neuralNetwork={this.props.neuralNetwork} modelType={this.props.sessionOptions.modelType} />
+          <NeuronDetailContainer />
+          <ModelVisualizationContainer 
+              neuralNetwork={this.props.neuralNetwork} 
+              modelType={this.props.sessionOptions.modelType} 
+              displayNeuronInfo={this.props.displayNeuronInfo} 
+          />
           <NeuralFunctionPlotContainer plot={this.props.plot} />
         </div>
         <div className="Session Row">
+          <ControlInputContainer />
           <ControlSectionContainer 
               neuralNetwork={this.props.neuralNetwork} 
               updateNeuralNetwork={this.props.updateNeuralNetwork}

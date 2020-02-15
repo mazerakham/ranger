@@ -10,7 +10,8 @@ export default class SessionPageContainer extends Component {
     super(props);
     this.rangerClient = new RangerClient();
     this.state = {
-      stage: "loading"
+      stage: "loading",
+      neuron: null
     }
   }
 
@@ -53,6 +54,10 @@ export default class SessionPageContainer extends Component {
 
   updatePlot = plot => this.setState({plot: plot});
 
+  displayNeuronInfo = neuron => {
+    this.setState({neuron: neuron})
+  }
+
   backToHome = () => {
     this.props.app.loadPage('home');
   }
@@ -72,6 +77,8 @@ export default class SessionPageContainer extends Component {
               desiredPlot={this.state.desiredPlot}
               plot={this.state.plot}
               updatePlot={this.updatePlot}
+              displayNeuronInfo={this.displayNeuronInfo}
+              neuron={this.state.neuron}
               backToHome={this.backToHome}
           /> 
         )

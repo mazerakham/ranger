@@ -11,40 +11,17 @@ export default class RangerNetwork extends Component {
 
   constructor(props){
     super(props);
-    this.getNeuralNetworkInfo();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    this.getNeuralNetworkInfo();
-  }
-
-  getNeuralNetworkInfo = () => {
-    this.layers = this.props.rangerNetwork.layers;
-    this.numLayers = this.layers.length;
-    this.coords = new RangerNetworkCoords(this.numLayers);
-    this.layerSizes = this.layers.map(layer => Object.keys(layer.neurons).length);
-
-    // Enumerate the neurons in each layer.
-    for (let layer of this.layers) {
-      try {
-        for (let [i, [uuid, neuron]] of enumerate(Object.entries(layer.neurons))) {
-          layer.neurons[uuid].position = i;
-        }
-      } catch (e) {
-        console.log("Layer");
-        console.log(layer);
-        throw e;
-      }
-    }
+    this.coords = new RangerNetworkCoords(this.props.numLayers);
   }
 
   renderLayers = () => {
-    return enumerate(this.layers).map(([i,layer]) => {
+    return enumerate(this.props.layers).map(([i,layer]) => {
       return <RangerLayer 
           key={Math.random()} 
           layerSize={Object.keys(layer.neurons).length} 
-          coords={this.coords.getLayerEmbedding(i, this.numLayers, Object.keys(layer.neurons).length)}
+          coords={this.coords.getLayerEmbedding(i, this.props.numLayers, Object.keys(layer.neurons).length)}
           neurons={layer.neurons}
+          getNeuronInfo={this.props.getNeuronInfo}
       />
     });
   }

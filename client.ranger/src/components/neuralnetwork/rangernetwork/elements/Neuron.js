@@ -28,19 +28,23 @@ export default class Neuron extends Component {
     }
   }
 
+  sayHello = () => {
+    console.log("Hello " + this.props.uuid);
+  }
+
   render() {
     switch (this.props.type) {
       case "INPUT": return (
-        <path d={this.getInputPath()} style={this.getStyle()} />
+        <path d={this.getInputPath()} style={this.getStyle()} onClick={this.sayHello} />
       );
       case "IDENTITY": return (
-        <rect x={this.props.coords.centerX - 0.2} y={this.props.coords.centerY - 0.2} width={0.4} height={0.4} />
+        <rect x={this.props.coords.centerX - 0.2} y={this.props.coords.centerY - 0.2} width={0.4} height={0.4} onClick={this.sayHello} />
       );
       case "HIDDEN": return (
-        <circle cx={this.props.coords.centerX} cy={this.props.coords.centerY} r={this.props.coords.radius} style={this.getStyle()} />
+        <circle cx={this.props.coords.centerX} cy={this.props.coords.centerY} r={this.props.coords.radius} style={this.getStyle()} onClick={this.sayHello} />
       );
       case "OUTPUT": return (
-        <path d={this.getOutputPath()} style={this.getStyle()} />
+        <path d={this.getOutputPath()} style={this.getStyle()} onClick={this.sayHello} />
       );
       default: throw new Error("neuron type " + this.props.type + " is unsupported.");
     }

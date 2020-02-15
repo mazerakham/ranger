@@ -19,7 +19,7 @@ export default class ModelVisualizationContainer extends Component {
         <React.Fragment>
         <div>Here is your Ranger network.</div>
         <div className="ranger-nn svg div">
-          <RangerNetworkContainer neuralNetwork={this.props.neuralNetwork} />
+          <RangerNetworkContainer neuralNetwork={this.props.neuralNetwork} displayNeuronInfo={this.props.displayNeuronInfo} />
         </div>
         </React.Fragment>
       );
