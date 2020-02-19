@@ -10,12 +10,11 @@ export default class HomePageContainer extends Component {
   }
 
   startNewSession = () => {
-    console.log("Starting new session.");
     this.props.app.loadPage("newSession");
   }
 
   loadSession = () => {
-    console.log("Loading a saved session is not yet supported.");
+    alert("Loading session not yet supported.");
   }
 
   render() {

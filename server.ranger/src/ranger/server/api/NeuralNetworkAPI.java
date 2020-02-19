@@ -19,14 +19,11 @@ import ranger.nn.plot.NeuralFunctionPlot;
 import ranger.nn.ranger.RangerNetwork;
 import ranger.nn.train.RangerTrainer;
 import ranger.nn.train.SGDTrainer;
-import ranger.server.service.NeuralNetworkService;
 
 public class NeuralNetworkAPI extends Controller {
 
   private static final int DEFAULT_SEED = new Random().nextInt();
   private Random random = new Random(DEFAULT_SEED);
-
-  private NeuralNetworkService neuralNetworkService = NeuralNetworkService.getInstance();
 
   @Override
   public void init() {
@@ -82,8 +79,6 @@ public class NeuralNetworkAPI extends Controller {
 
   private final Handler trainRanger = (request, response) -> {
     Json json = request.getJson();
-    Log.debug("\ntrainRanger Handler received JSON:");
-    Log.debug(json);
     checkState(json.hasKey("neuralNetwork"));
     checkState(json.hasKey("datasetType"));
     RangerNetwork rangerNetwork = RangerNetwork.fromJson(json.getJson("neuralNetwork"));

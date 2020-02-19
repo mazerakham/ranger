@@ -10,7 +10,6 @@ export default class ChoosePlainNetworkDetailsPage extends Component {
     }
 
     return bRange(parseInt(this.props.numHiddenLayers)).map(i => {
-      console.log(i);
       return (
         <div className="layer-size" key={i}>
           Layer {i+1} Size:

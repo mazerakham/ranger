@@ -17,7 +17,7 @@ public class Dataset {
       return XOrDataset.generateDefaultXOrDataset(numExamples);
     } else {
       checkState(type == DatasetType.BULLSEYE);
-      return BullseyeDataset.generateDefaultBullseyeDataset();
+      return BullseyeDataset.generateDefaultBullseyeDataset(numExamples);
     }
   }
 

@@ -16,6 +16,17 @@ import ranger.math.Vector;
 
 public class RangerNetwork implements Function<Vector, Vector> {
 
+  /**
+   * When this number is higher, new neurons will have a greater tendency to go to layers that already have more
+   * neurons---hence slowing the growth of new layers.
+   */
+  public static final double LAYER_SIZE_GROWTH_EXPONENT = 1.2;
+
+  /**
+   * Once a layer reaches 6 neurons, its growth *rate* no longer increases.
+   */
+  public static final double LAYER_GROWTH_CAP = 6;
+
   private final int inSize;
   private final int outSize;
 
@@ -62,8 +73,8 @@ public class RangerNetwork implements Function<Vector, Vector> {
    * Randomly insert neurons in the layers with random choice of dendrites.
    */
   public void growNewNeurons(Random random) {
-    double totalWeight = sum(layers, l -> l.size() + 1) - inSize - outSize;
-    for (int i = 1; i < layers.size() - 1; i++) {
+    double totalWeight = sum(layers, l -> Math.pow(l.getGrowthRate(), LAYER_SIZE_GROWTH_EXPONENT));
+    for (int i = layers.size() - 2; i >= 1; i--) {
       neuronGenerator.growNewNeurons(layers, totalWeight, i, random);
     }
   }
@@ -83,7 +94,7 @@ public class RangerNetwork implements Function<Vector, Vector> {
    */
   public void propagateBackward(Vector label) {
     int L = layers.size();
-    outputLayer.loadOutputAxonSignal(label.minus(outputLayer.getAxonActivationAsOutput()))
+    outputLayer.loadOutputAxonSignal(outputLayer.getAxonActivationAsOutput().minus(label))
         .computeDendriteSignal();
     for (int i = L - 2; i >= 1; i--) {
       layers.get(i).loadAxonSignal(layers.get(i + 1).getDendriteSignal())

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 
 import RangerNetwork from './RangerNetwork';
+
+import { enumerate } from 'utils/Numbers';
+
 export default class RangerNetworkContainer extends Component {
 
   constructor(props){
@@ -8,38 +11,26 @@ export default class RangerNetworkContainer extends Component {
     this.getNeuralNetworkInfo();
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(oldProps, oldState) {
     this.getNeuralNetworkInfo();
   }
 
   getNeuralNetworkInfo = () => {
-    if (!this.props.neuralNetwork) {
-      return;
-    }
-    
-    this.layers = this.props.rangerNetwork.layers;
+    this.layers = this.props.neuralNetwork.layers;
     this.numLayers = this.layers.length;
     this.layerSizes = this.layers.map(layer => Object.keys(layer.neurons).length);
     this.allNeurons = {};
 
     // Enumerate the neurons within in each layer and globally.
-    for (let layer of this.layers) {
-      try {
-        for (let [i, [uuid, neuron]] of enumerate(Object.entries(layer.neurons))) {
-          layer.neurons[uuid].position = i;
-          this.allNeurons[uuid] = neuron;
-        }
-      } catch (e) {
-        console.log("Layer");
-        console.log(layer);
-        throw e;
+    for (let [l,layer] of enumerate(this.layers)) {
+      for (let [i, [uuid, neuron]] of enumerate(Object.entries(layer.neurons))) {
+        layer.neurons[uuid].position = i;
+        this.allNeurons[l + uuid] = neuron;
       }
     }
   }
 
   displayNeuronInfo = (uuid) => {
-    console.log("Received UUID " + uuid + "; passing neuron to parent:");
-    console.log(this.allNeurons[uuid]);
     this.props.displayNeuronInfo(this.allNeurons[uuid]);
   }
 
@@ -48,6 +39,7 @@ export default class RangerNetworkContainer extends Component {
       <RangerNetwork
           layers={this.layers}
           numLayers={this.numLayers}
+          layerSizes={this.layerSizes}
           rangerNetwork={this.props.neuralNetwork} 
           displayNeuronInfo={this.displayNeuronInfo}
       />

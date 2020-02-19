@@ -6,7 +6,7 @@ export default class NeuronDetailContainer extends Component {
 
   render() {
     return (
-      <NeuronDetail />
+      <NeuronDetail neuron={this.props.neuron} />
     )
   }
 }

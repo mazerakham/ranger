@@ -11,39 +11,43 @@ export default class RangerNetwork extends Component {
 
   constructor(props){
     super(props);
-    this.coords = new RangerNetworkCoords(this.props.numLayers);
+    console.log("Constructing RangerNetwork with props:");
+    console.log(props);
+    this.coords = new RangerNetworkCoords(props.numLayers);
   }
 
   renderLayers = () => {
-    return enumerate(this.props.layers).map(([i,layer]) => {
+    return enumerate(this.props.layers).map(([l,layer]) => {
       return <RangerLayer 
-          key={Math.random()} 
+          key={Math.random()}
+          l = {l}
           layerSize={Object.keys(layer.neurons).length} 
-          coords={this.coords.getLayerEmbedding(i, this.props.numLayers, Object.keys(layer.neurons).length)}
+          coords={this.coords.getLayerEmbedding(l, this.props.numLayers, Object.keys(layer.neurons).length)}
           neurons={layer.neurons}
-          getNeuronInfo={this.props.getNeuronInfo}
+          displayNeuronInfo={this.props.displayNeuronInfo}
       />
     });
   }
 
   renderConnections = () => {
     let ret = [];
-    for (let l = 0; l < this.numLayers - 1; l++) {
-      let layer1 = this.layers[l];
-      let layer1Size = this.layerSizes[l];
-      let layer2 = this.layers[l+1];
-      let layer2Size = this.layerSizes[l+1];
+    for (let l = 0; l < this.props.numLayers - 1; l++) {
+      let layer1 = this.props.layers[l];
+      let layer1Size = Object.keys(layer1.neurons).length;
+      let layer2 = this.props.layers[l+1];
+      let layer2Size = Object.keys(layer2.neurons).length;
       for (let [j, [uuid2, neuron2]] of enumerate(Object.entries(layer2.neurons))) {
         for (let [i, [uuid1, weight]] of enumerate(Object.entries(neuron2.dendrites))) {
           ret.push(
             <NeuronConnection 
-                key={Math.random()} 
+                key={Math.random()}
+                weight={weight} 
                 coords={this.coords.getConnectionCoords(
                     l,
                     layer1.neurons[uuid1].position,
                     neuron2.position,
-                    this.numLayers,
-                    this.layerSizes
+                    this.props.numLayers,
+                    this.props.layerSizes
                 )} 
             />
           );
@@ -56,7 +60,7 @@ export default class RangerNetwork extends Component {
 
   render() {
     return (
-      <SVG parentCoords={SVG.rootCoords()} coords={new RangerNetworkCoords(this.numLayers)}>
+      <SVG parentCoords={SVG.rootCoords()} coords={new RangerNetworkCoords(this.props.numLayers)}>
         {this.renderConnections()}
         {this.renderLayers()}
       </SVG>
@@ -77,9 +81,9 @@ export class RangerNetworkCoords extends Coordinates {
   getLayerEmbedding = (i, numLayers, layerSize) => {
     return {
       x: 1 + 2 * i,
-      y: 4.5 - layerSize / 2,
+      y: 4.5 - Math.min(4.5, layerSize / 2),
       w: 1,
-      h: layerSize
+      h: Math.min(layerSize, 10)
     }
   }
 

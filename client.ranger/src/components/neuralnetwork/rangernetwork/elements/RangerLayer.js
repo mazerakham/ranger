@@ -4,7 +4,7 @@ import Neuron from './Neuron';
 
 import SVG from 'components/meta/SVG';
 import Coordinates from 'utils/Coordinates';
-import { bRange } from 'utils/Numbers';
+import { bRange, enumerate } from 'utils/Numbers';
 
 export default class RangerLayer extends Component {
 
@@ -22,14 +22,15 @@ export default class RangerLayer extends Component {
   }
 
   renderNeurons = () => {
-    let i = 0;
-    return Object.entries(this.props.neurons).map(([uuid,neuron]) => {
+    return enumerate(Object.entries(this.props.neurons)).map(([i, [uuid,neuron]]) => {
       return (
         <Neuron 
             key={Math.random()} 
             coords={this.coords.getNeuronCoords(i++)} 
             type={neuron.type} 
             uuid={neuron.uuid}
+            s={neuron.s}
+            displayNeuronInfo={() => this.props.displayNeuronInfo(this.props.l + neuron.uuid)}
         />
       )
     })

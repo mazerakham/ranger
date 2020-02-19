@@ -20,31 +20,33 @@ export default class Neuron extends Component {
     return "M" + p1 + " L" + p2 + " L" + p3 + " Z";
   }
 
+  getFill = () => {
+    let s = this.props.s;
+    let rgbVal = 255 * (1-s);
+    return "rgb(" + rgbVal + "," + rgbVal + "," + rgbVal + ")";
+  }
+
   getStyle = () => {
     return {
       stroke: "black",
       strokeWidth: "0.03",
-      fill: "black"
+      fill: this.getFill()
     }
-  }
-
-  sayHello = () => {
-    console.log("Hello " + this.props.uuid);
   }
 
   render() {
     switch (this.props.type) {
       case "INPUT": return (
-        <path d={this.getInputPath()} style={this.getStyle()} onClick={this.sayHello} />
+        <path d={this.getInputPath()} style={this.getStyle()} onClick={this.props.displayNeuronInfo} />
       );
       case "IDENTITY": return (
-        <rect x={this.props.coords.centerX - 0.2} y={this.props.coords.centerY - 0.2} width={0.4} height={0.4} onClick={this.sayHello} />
+        <rect x={this.props.coords.centerX - 0.2} y={this.props.coords.centerY - 0.2} width={0.4} height={0.4} onClick={this.props.displayNeuronInfo} style={this.getStyle()} />
       );
       case "HIDDEN": return (
-        <circle cx={this.props.coords.centerX} cy={this.props.coords.centerY} r={this.props.coords.radius} style={this.getStyle()} onClick={this.sayHello} />
+        <circle cx={this.props.coords.centerX} cy={this.props.coords.centerY} r={this.props.coords.radius} style={this.getStyle()} onClick={this.props.displayNeuronInfo} />
       );
       case "OUTPUT": return (
-        <path d={this.getOutputPath()} style={this.getStyle()} onClick={this.sayHello} />
+        <path d={this.getOutputPath()} style={this.getStyle()} onClick={this.props.displayNeuronInfo} />
       );
       default: throw new Error("neuron type " + this.props.type + " is unsupported.");
     }

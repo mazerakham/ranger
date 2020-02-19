@@ -14,7 +14,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 
 import ox.Json;
-import ox.Log;
 import ranger.arch.JsonUtils;
 import ranger.math.Vector;
 import ranger.nn.ranger.Neuron.NeuronType;
@@ -22,7 +21,7 @@ import ranger.nn.ranger.Neuron.NeuronType;
 public class Layer {
 
   // With this probability, a new dendrite will be grown to a predecessor by a newly-created neuron.
-  private static final double DENDRITE_SPARSITY_CONSTANT = 1.0;
+  private static final double INITIAL_DENDRITE_SPARSITY = 1.0;
 
   /**
    * Special map for the input layer to map its inputs to its input neurons.
@@ -53,11 +52,13 @@ public class Layer {
   private NeuronMap preAxonSignal;
   private NeuronMap dendriteSignal;
 
-  public void growNewNeuron(Layer prev, Layer next, Random random) {
+  public Neuron growNewNeuron(Layer prev, Layer next, Random random) {
     Neuron neuron = Neuron.hiddenNeuron();
     neurons.put(neuron.uuid, neuron);
-    neuron.dendrites = Dendrites.randomDendrites(prev, DENDRITE_SPARSITY_CONSTANT, random);
+    neuron.dendrites = Dendrites.randomDendrites(prev, INITIAL_DENDRITE_SPARSITY, random);
+    neuron.bias = random.nextGaussian();
     next.maybeGrowDendritesTo(neuron.uuid, random);
+    return neuron;
   }
 
   public void maybeGrowDendritesTo(UUID neuronUUID, Random random) {
@@ -139,7 +140,13 @@ public class Layer {
   public Layer loadAxonSignal(NeuronMap signal) {
     this.axonSignal = signal;
     for (Neuron neuron : neurons.values()) {
-      neuron.loadAxonSignal(signal.containsKey(neuron.uuid) ? signal.get(neuron.uuid) : 0.0);
+      if (signal.containsKey(neuron.uuid)) {
+        neuron.loadAxonSignal(signal.get(neuron.uuid));
+      } else {
+        neuron.s = -2.0; // implicitly kills the neuron when it doesn't have a signal.
+        neuron.loadAxonSignal(0.0);
+      }
+
     }
     return this;
   }
@@ -148,12 +155,9 @@ public class Layer {
     NeuronMap totalSignal = new NeuronMap();
     for (Neuron neuron : neurons.values()) {
       NeuronMap neuronSignal;
-      try {
-        neuronSignal = neuron.computeDendriteSignal();
-      } catch (Exception e) {
-        Log.debug("The layer that failed to compute dendrite signal was:");
-        Log.debug(this.toJson().prettyPrint());
-        throw e;
+      neuronSignal = neuron.computeDendriteSignal();
+      if (neuron.isDead()) {
+        continue;
       }
       for (Entry<UUID, Double> entry : neuronSignal.entrySet()) {
         totalSignal.merge(entry.getKey(), entry.getValue(), (s1, s2) -> s1 + s2);
@@ -247,6 +251,11 @@ public class Layer {
       }
     }
     return ret;
+  }
+
+  public double getGrowthRate() {
+    return Math.min(Math.pow(hiddenSize() + 1, RangerNetwork.LAYER_SIZE_GROWTH_EXPONENT),
+        Math.pow(RangerNetwork.LAYER_GROWTH_CAP, RangerNetwork.LAYER_SIZE_GROWTH_EXPONENT));
   }
 
   public static Layer fromJson(Json json) {

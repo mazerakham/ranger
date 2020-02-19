@@ -20,13 +20,17 @@ export default class SessionPage extends Component {
           <h1>Session</h1>
         </div>
         <div className="Session Row">
-          <NeuronDetailContainer />
+          <NeuronDetailContainer 
+              neuron={this.props.neuron} 
+          />
           <ModelVisualizationContainer 
               neuralNetwork={this.props.neuralNetwork} 
               modelType={this.props.sessionOptions.modelType} 
               displayNeuronInfo={this.props.displayNeuronInfo} 
           />
-          <NeuralFunctionPlotContainer plot={this.props.plot} />
+          <NeuralFunctionPlotContainer 
+              plot={this.props.plot} 
+          />
         </div>
         <div className="Session Row">
           <ControlInputContainer />
@@ -37,7 +41,9 @@ export default class SessionPage extends Component {
               modelType={this.props.sessionOptions.modelType}
               datasetType={this.props.sessionOptions.datasetType}
           />
-          <DesiredFunctionPlotContainer plot={this.props.desiredPlot} />
+          <DesiredFunctionPlotContainer 
+              plot={this.props.desiredPlot} 
+          />
         </div>
       </div>
     )

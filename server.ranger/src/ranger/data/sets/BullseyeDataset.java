@@ -14,8 +14,8 @@ public class BullseyeDataset {
   private static final double INNER_BAND = 0.33;
   private static final double OUTER_BAND = 0.67;
 
-  public static Dataset generateDefaultBullseyeDataset() {
-    return generateBullseyeDataset(10_000, 0.04, 0.06, new Random());
+  public static Dataset generateDefaultBullseyeDataset(int numExamples) {
+    return generateBullseyeDataset(numExamples, 0.0, 0.0, new Random());
   }
 
   public static Dataset generateBullseyeDataset(int numExamples, double inputNoise, double outputNoise, Random random) {
@@ -31,7 +31,7 @@ public class BullseyeDataset {
     double theta = random.nextDouble() * 2 * Math.PI;
     Vector actualDatapoint = new Vector(r * Math.cos(theta), r * Math.sin(theta));
     Vector inputNoiseVector = RangerMath.gaussianVector(2, inputNoise, random);
-    double actualLabel = getLabel(r);
+    double actualLabel = getOptimalValue(actualDatapoint);
     double outputNoiseSample = random.nextGaussian() * outputNoise;
     return new LabeledDatapoint(actualDatapoint.plus(inputNoiseVector), new Vector(actualLabel + outputNoiseSample));
   }
@@ -48,7 +48,7 @@ public class BullseyeDataset {
     double wB = 1.0 / Math.pow(distB + eps, 5);
     double wC = 1.0 / Math.pow(distC + eps, 5);
 
-    return wB / (wA + wB + wC);
+    return (-1.0 * wA + 1.0 * wB - 1.0 * wC) / (wA + wB + wC);
   }
 
   public static double getLabel(double r) {

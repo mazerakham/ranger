@@ -40,8 +40,6 @@ export default class PlainControlSectionContainer extends Component {
     ).then(json => {
       console.log("Got back neural network: ");
       console.log(json.neuralNetwork);
-      console.log("Got back plot: ");
-      console.log(json.plot);
       this.props.updateNeuralNetwork(json.neuralNetwork);
       this.props.updatePlot(json.plot);
     })

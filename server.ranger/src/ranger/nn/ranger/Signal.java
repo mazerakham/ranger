@@ -1,5 +1,7 @@
 package ranger.nn.ranger;
 
+import ox.Json;
+
 public class Signal {
 
   public final double value;
@@ -13,5 +15,9 @@ public class Signal {
   @Override
   public String toString() {
     return String.format("%.2f, %.2f", value, strength);
+  }
+
+  public Json toJson() {
+    return Json.array(value, strength);
   }
 }

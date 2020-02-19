@@ -20,3 +20,7 @@ export const enumerate = (list) => {
   }
   return ret;
 }
+
+export const clip = (min, max, val) => {
+  return Math.max(min, Math.min(max, val));
+}

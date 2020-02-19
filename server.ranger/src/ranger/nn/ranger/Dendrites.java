@@ -46,17 +46,18 @@ public class Dendrites {
   public NeuronMap computeDendriteSignal(double preAxonSignal, double signalStrength) {
     NeuronMap ret = new NeuronMap();
     for (Entry<UUID, Double> dendrite : dendrites.entrySet()) {
-      ret.put(dendrite.getKey(), dendrite.getValue() * preAxonSignal * signalStrength);
+      ret.put(dendrite.getKey(), dendrite.getValue() * preAxonSignal);
     }
     return ret;
   }
 
-  public void update(Map<UUID, Double> dendriteSignal, double learningRate) {
-    for (Entry<UUID, Double> singleDendriteSignal : dendriteSignal.entrySet()) {
-      // It is possible that the dendrite was deleted, in which case the signal for that dendrite is ignored. Hence,
+  public void update(SignalVector dendriteStimulus, double learningRate) {
+    for (Entry<UUID, Signal> dendriteStimulusSignal : dendriteStimulus.signals.entrySet()) {
+      // It is possible that the dendrite was deleted, in which case the stimulus for that dendrite is ignored. Hence,
       // "only compute If Present".
-      dendrites.computeIfPresent(singleDendriteSignal.getKey(),
-          (uuid, oldVal) -> oldVal - learningRate * singleDendriteSignal.getValue());
+      dendrites.computeIfPresent(dendriteStimulusSignal.getKey(), (uuid, oldVal) -> {
+        return oldVal - learningRate * dendriteStimulusSignal.getValue().value;
+      });
     }
   }
 

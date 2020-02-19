@@ -17,7 +17,7 @@ import ranger.math.Vector;
 
 public class PlainNeuralNetwork implements Function<Vector, Vector> {
 
-  private static final double L1_REG_CONSTANT = 0.0;
+  private static final double L1_REG_CONSTANT = 0.002;
   
   /**
    * Includes input layer and output layer.

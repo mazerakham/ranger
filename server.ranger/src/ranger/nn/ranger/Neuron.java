@@ -12,7 +12,7 @@ public class Neuron {
   /**
    * Starting state for new hidden neurons.
    */
-  public static final double SIGMA_0 = 0.5;
+  public static final double SIGMA_0 = 0.25;
 
   /**
    * The state-value threshold past which a hidden neuron starts to have signal strength.
@@ -32,7 +32,7 @@ public class Neuron {
   /**
    * How much this neuron pays for each dendrite at *every* step.
    */
-  public static final double DENDRITE_PENALTY = 0.002;
+  public static final double DENDRITE_PENALTY = 0.001;
 
   /**
    * Penalty paid by an identity neuron for being alive.
@@ -119,7 +119,7 @@ public class Neuron {
     }
 
     if (random.nextDouble() < proba) {
-      this.dendrites.add(predecessorUUID, 0.0);
+      this.dendrites.add(predecessorUUID, random.nextGaussian());
     }
   }
 
@@ -171,7 +171,7 @@ public class Neuron {
       }
     }
     if (this.type == NeuronType.HIDDEN || this.type == NeuronType.OUTPUT) {
-      dendrites.update(dendriteSignal, getLearningRate());
+      dendrites.update(dendriteStimulus, getLearningRate());
       double db = this.preAxonSignal;
       bias = bias - db * getLearningRate();
     }
@@ -186,7 +186,7 @@ public class Neuron {
   }
 
   private double getLearningRate() {
-    return 0.05;
+    return 0.2 * (1.0 - s);
   }
 
   private double getSignalStrength() {
@@ -211,13 +211,22 @@ public class Neuron {
   }
 
   public Json toJson() {
-    return Json.object()
+    Json ret = Json.object()
         .with("uuid", uuid.toString())
         .with("type", type)
         .with("dendrites", dendrites == null ? null : dendrites.toJson())
         .with("bias", bias)
         .with("s", s)
-        .with("activationFunction", activationFunction == null ? null : activationFunction.toJson());
+        .with("activationFunction", activationFunction == null ? null : activationFunction.toJson())
+        .with("activity", Json.object()
+            .with("dendriteStimulus", dendriteStimulus == null ? null : dendriteStimulus.toJson())
+            .with("preActivation", preActivation)
+            .with("activation", activation == null ? null : activation.toJson())
+            .with("axonSignal", axonSignal)
+            .with("preAxonSignal", preAxonSignal)
+            .with("dendriteSignal", dendriteSignal == null ? null : dendriteSignal.toJson()));
+        
+    return ret;
   }
 
   public static enum NeuronType {

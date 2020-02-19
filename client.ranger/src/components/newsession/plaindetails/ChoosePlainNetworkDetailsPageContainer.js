@@ -15,8 +15,6 @@ export default class ChoosePlainNetworkDetailsPageContainer extends Component {
   range = (n) => !n || n === "0" ? [] : [...this.range(n-1), n-1];
 
   onNumHiddenLayersChange = (event) => {
-    console.log("Layer Change Event:", event);
-    console.log(event.target.value);
     this.setState({
       numHiddenLayers: event.target.value,
       hiddenLayerSizes: this.range(event.target.value).map(i => "")

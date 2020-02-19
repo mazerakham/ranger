@@ -47,14 +47,14 @@ export default class SessionPageContainer extends Component {
   }
 
   updateNeuralNetwork = neuralNetwork => {
-    console.log("Updating neural network:");
-    console.log(neuralNetwork);
     this.setState({neuralNetwork: neuralNetwork});
   }
 
   updatePlot = plot => this.setState({plot: plot});
 
   displayNeuronInfo = neuron => {
+    console.log("Analyzing neuron:");
+    console.log(neuron);
     this.setState({neuron: neuron})
   }
 
@@ -63,7 +63,6 @@ export default class SessionPageContainer extends Component {
   }
 
   render() {
-    console.log(this.props.sessionOptions);
     switch (this.state.stage) {
       case "loading":
         return ( <div><h1>Creating Session.</h1></div>);

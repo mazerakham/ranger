@@ -36,3 +36,7 @@
   left: 50%;
   margin-left: -68px;
 }
+
+.Session .NeuronDetail span {
+  font-size: 7px;
+}

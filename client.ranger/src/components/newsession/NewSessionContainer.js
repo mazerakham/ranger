@@ -43,8 +43,6 @@ export default class NewSessionContainer extends Component {
       ...this.state, 
       neuralNetworkSpecs: neuralNetworkSpecs
     };
-    console.log("Selecting Network Details with allOptions:");
-    console.log(allOptions);
     this.props.app.startNewSession(allOptions);
   }
 
