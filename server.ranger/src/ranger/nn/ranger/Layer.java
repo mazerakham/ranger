@@ -2,11 +2,8 @@ package ranger.nn.ranger;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.UUID;
 
 import com.google.common.collect.BiMap;
@@ -15,8 +12,8 @@ import com.google.common.collect.Maps;
 
 import ox.Json;
 import ranger.arch.JsonUtils;
+import ranger.math.SparseVector;
 import ranger.math.Vector;
-import ranger.nn.ranger.Neuron.NeuronType;
 
 public class Layer {
 
@@ -39,34 +36,18 @@ public class Layer {
   protected Map<UUID, Neuron> neurons = Maps.newHashMap();
 
   /**
-   * Forward prop stimuli & activations.
+   * Forward prop activations.
    */
-  private SignalVector dendriteStimulus;
-  private NeuronMap preAxonActivation;
-  private SignalVector axonActivation;
+  private SparseVector dendriteActivation;
+  private SparseVector preAxonActivation;
+  private SparseVector axonActivation;
 
   /**
    * Backprop signals.
    */
-  private NeuronMap axonSignal;
-  private NeuronMap preAxonSignal;
-  private NeuronMap dendriteSignal;
-
-  public Neuron growNewNeuron(Layer prev, Layer next, Random random) {
-    Neuron neuron = Neuron.hiddenNeuron();
-    neurons.put(neuron.uuid, neuron);
-    neuron.dendrites = Dendrites.randomDendrites(prev, INITIAL_DENDRITE_SPARSITY, random);
-    neuron.bias = random.nextGaussian();
-    next.maybeGrowDendritesTo(neuron.uuid, random);
-    return neuron;
-  }
-
-  public void maybeGrowDendritesTo(UUID neuronUUID, Random random) {
-    // Each neuron has a const / (# dendrites) probability of adding this neuron to their mask.
-    for (Neuron neuron : neurons.values()) {
-      neuron.maybeGrowDendritesTo(neuronUUID, random);
-    }
-  }
+  private SparseVector axonSignal;
+  private SparseVector preAxonSignal;
+  private SparseVector dendriteSignal;
 
   public Layer withNeuron(Neuron neuron) {
     neurons.put(neuron.uuid, neuron);
@@ -75,60 +56,56 @@ public class Layer {
 
   public Layer loadInputVector(Vector inputVector) {
     throw new UnsupportedOperationException();
-    // This has to use the inputMapping or whatever. This should be renamed to loadInput, making clear it's only for the
-    // input layer.
   }
 
 
-  public Layer loadDendriteStimulus(SignalVector activation) {
-    this.dendriteStimulus = activation;
+  public Layer loadDendriteActivation(SparseVector dendriteActivation) {
+    this.dendriteActivation = dendriteActivation;
     for (Neuron neuron : neurons.values()) {
-      neuron.loadDendriteStimulus(dendriteStimulus);
+      neuron.loadDendriteActivation(dendriteActivation);
     }
     return this;
   }
 
   public void computeAxonActivation() {
-    checkState(dendriteStimulus != null, "Cannot compute activation without stimulus.");
-    SignalVector axonActivation = new SignalVector();
+    checkState(dendriteActivation != null, "Cannot compute activation without stimulus.");
+    axonActivation = new SparseVector();
     for (Neuron neuron : neurons.values()) {
-      axonActivation.addSignal(neuron.uuid, neuron.computeAxonActivation());
+      axonActivation.put(neuron.uuid, neuron.computeAxonActivation());
     }
-    this.axonActivation = axonActivation;
   }
 
-  public SignalVector getAxonActivation() {
+  public SparseVector getAxonActivation() {
     return this.axonActivation;
   }
 
   public Vector getAxonActivationAsOutput() {
-    SignalVector axonActivation = this.axonActivation;
     Map<UUID, Integer> orderMap = outputMap.inverse();
     Vector ret = Vector.zeros(orderMap.size());
-    for (Entry<UUID, Signal> entry : axonActivation.signals.entrySet()) {
-      ret.setEntry(orderMap.get(entry.getKey()), entry.getValue().value);
+    for (Entry<UUID, Double> entry : axonActivation.entrySet()) {
+      ret.setEntry(orderMap.get(entry.getKey()), entry.getValue());
     }
     return ret;
   }
 
   public void clearActivations() {
-    this.dendriteStimulus = null;
+    this.dendriteActivation = null;
     this.preAxonActivation = null;
     this.axonActivation = null;
   }
 
   public Layer loadInputAxonActivation(Vector signal) {
-    axonActivation = new SignalVector();
+    axonActivation = new SparseVector();
     for (int i = 0; i < signal.size(); i++) {
       UUID uuid = this.inputMap.get(i);
       neurons.get(uuid).loadInputActivation(signal.getEntry(i));
-      axonActivation.addSignal(uuid, new Signal(signal.getEntry(i), 1.0));
+      axonActivation.put(uuid, signal.getEntry(i));
     }
     return this;
   }
 
   public Layer loadOutputAxonSignal(Vector signal) {
-    axonSignal = new NeuronMap();
+    axonSignal = new SparseVector();
     for (int i = 0; i < signal.size(); i++) {
       UUID uuid = this.outputMap.get(i);
       axonSignal.put(uuid, signal.getEntry(i));
@@ -137,14 +114,13 @@ public class Layer {
     return this;
   }
   
-  public Layer loadAxonSignal(NeuronMap signal) {
+  public Layer loadAxonSignal(SparseVector signal) {
     this.axonSignal = signal;
     for (Neuron neuron : neurons.values()) {
       if (signal.containsKey(neuron.uuid)) {
         neuron.loadAxonSignal(signal.get(neuron.uuid));
       } else {
-        neuron.s = -2.0; // implicitly kills the neuron when it doesn't have a signal.
-        neuron.loadAxonSignal(0.0);
+        neuron.iHaveNoSignal();
       }
 
     }
@@ -152,34 +128,17 @@ public class Layer {
   }
 
   public Layer computeDendriteSignal() {
-    NeuronMap totalSignal = new NeuronMap();
+    SparseVector totalSignal = new SparseVector();
     for (Neuron neuron : neurons.values()) {
-      NeuronMap neuronSignal;
-      neuronSignal = neuron.computeDendriteSignal();
-      if (neuron.isDead()) {
-        continue;
-      }
-      for (Entry<UUID, Double> entry : neuronSignal.entrySet()) {
-        totalSignal.merge(entry.getKey(), entry.getValue(), (s1, s2) -> s1 + s2);
-      }
+      SparseVector neuronSignal = neuron.computeDendriteSignal();
+      totalSignal = totalSignal.plus(neuronSignal);
     }
     this.dendriteSignal = totalSignal;
     return this;
   }
 
-  public NeuronMap getDendriteSignal() {
+  public SparseVector getDendriteSignal() {
     return this.dendriteSignal;
-  }
-
-  /**
-   * Construct a new layer consisting of identity neurons back to the given layer.
-   */
-  public static Layer identityLayer(Layer layer) {
-    Layer ret = new Layer();
-    for (Neuron neuron : layer.neurons.values()) {
-      ret.withNeuron(Neuron.identityNeuron(neuron));
-    }
-    return ret;
   }
 
   public static Layer inputLayer(int inSize) {
@@ -211,51 +170,7 @@ public class Layer {
    * 
    */
   public void updateNeurons(Layer next) {
-    List<UUID> markedForDeletion = new ArrayList<>();
-    for (Neuron neuron : neurons.values()) {
-      neuron.update();
-      if (neuron.isDead()) {
-        markedForDeletion.add(neuron.uuid);
-      }
-    }
-    for (UUID uuid : markedForDeletion) {
-      neurons.remove(uuid);
-      next.removeDendritesTo(uuid);
-    }
-  }
-
-  private void removeDendritesTo(UUID neuronUUID) {
-    for (Neuron neuron : neurons.values()) {
-      neuron.removeDendritesTo(neuronUUID);
-    }
-  }
-
-  public boolean isOnlyIdentity() {
-    for (Neuron neuron : neurons.values()) {
-      if (neuron.type != NeuronType.IDENTITY) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  public int size() {
-    return neurons.size();
-  }
-
-  public int hiddenSize() {
-    int ret = 0;
-    for (Neuron neuron : neurons.values()) {
-      if (neuron.type == NeuronType.HIDDEN) {
-        ret++;
-      }
-    }
-    return ret;
-  }
-
-  public double getGrowthRate() {
-    return Math.min(Math.pow(hiddenSize() + 1, RangerNetwork.LAYER_SIZE_GROWTH_EXPONENT),
-        Math.pow(RangerNetwork.LAYER_GROWTH_CAP, RangerNetwork.LAYER_SIZE_GROWTH_EXPONENT));
+    throw new UnsupportedOperationException();
   }
 
   public static Layer fromJson(Json json) {

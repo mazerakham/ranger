@@ -19,6 +19,10 @@ public class RangerTrainer {
     this.datasetType = datasetType;
   }
 
+  public void growNewNeuron(Random random, int layer, boolean startNewLayer) {
+    throw new UnsupportedOperationException();
+  }
+
   public void performTrainingStep(Random random) {
     LabeledDatapoint labeledDatapoint = Dataset.generateDataset(datasetType, 1).get(0);
     Vector datapoint = labeledDatapoint.datapoint;
@@ -26,12 +30,8 @@ public class RangerTrainer {
 
     Log.debug(rangerNetwork.toJson().prettyPrint());
     try {
-    rangerNetwork.expand();
-    rangerNetwork.growNewNeurons(random);
-    rangerNetwork.propagateForward(datapoint);
-    rangerNetwork.propagateBackward(label);
-    rangerNetwork.updateNeurons();
-    rangerNetwork.contract();
+      rangerNetwork.propagateForward(datapoint);
+      rangerNetwork.propagateBackward(label);
     } catch (Exception e) {
       Log.debug("The error happened with ranger network in this state:");
       Log.debug(rangerNetwork.toJson().prettyPrint());

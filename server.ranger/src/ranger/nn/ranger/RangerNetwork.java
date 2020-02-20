@@ -2,9 +2,7 @@ package ranger.nn.ranger;
 
 import static com.google.common.base.Preconditions.checkState;
 import static ox.util.Functions.map;
-import static ox.util.Functions.sum;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -48,35 +46,7 @@ public class RangerNetwork implements Function<Vector, Vector> {
   public RangerNetwork initialize(Random random) {
     inputLayer = Layer.inputLayer(inSize);
     outputLayer = Layer.outputLayer(inSize, outSize, inputLayer);
-    for (Neuron neuron : outputLayer.neurons.values()) {
-      neuron.dendrites = Dendrites.randomDendrites(inputLayer, 1.0, random);
-    }
-    layers.add(inputLayer);
-    layers.add(outputLayer);
-    return this;
-  }
-
-  /**
-   * Insert an identity layer between each layer.
-   */
-  public void expand() {
-    ArrayList<Layer> newLayers = Lists.newArrayList();
-    for (int i = 0; i < layers.size() - 1; i++) {
-      newLayers.add(layers.get(i));
-      newLayers.add(Layer.identityLayer(layers.get(i)));
-    }
-    newLayers.add(outputLayer);
-    this.layers = newLayers;
-  }
-
-  /**
-   * Randomly insert neurons in the layers with random choice of dendrites.
-   */
-  public void growNewNeurons(Random random) {
-    double totalWeight = sum(layers, l -> Math.pow(l.getGrowthRate(), LAYER_SIZE_GROWTH_EXPONENT));
-    for (int i = layers.size() - 2; i >= 1; i--) {
-      neuronGenerator.growNewNeurons(layers, totalWeight, i, random);
-    }
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -85,7 +55,7 @@ public class RangerNetwork implements Function<Vector, Vector> {
   public void propagateForward(Vector input) {
     inputLayer.loadInputAxonActivation(input);
     for (int i = 1; i < layers.size(); i++) {
-      layers.get(i).loadDendriteStimulus(layers.get(i - 1).getAxonActivation()).computeAxonActivation();
+      layers.get(i).loadDendriteActivation(layers.get(i - 1).getAxonActivation()).computeAxonActivation();
     }
   }
 
@@ -100,32 +70,6 @@ public class RangerNetwork implements Function<Vector, Vector> {
       layers.get(i).loadAxonSignal(layers.get(i + 1).getDendriteSignal())
           .computeDendriteSignal();
     }
-  }
-
-  /**
-   * Update the internal state of each neuron. See
-   */
-  public void updateNeurons() {
-    for (int i = 1; i < layers.size() - 1; i++) {
-      layers.get(i).updateNeurons(layers.get(i+1));
-    }
-    outputLayer.updateNeurons(null);
-  }
-
-  /**
-   * Remove any layers that consist only of identity neurons.
-   */
-  public void contract() {
-    List<Layer> newLayers = new ArrayList<>();
-    newLayers.add(inputLayer);
-    for (int i = 1; i < layers.size() - 1; i++) {
-      Layer current = layers.get(i);
-      if (!current.isOnlyIdentity()) {
-        newLayers.add(current);
-      }
-    }
-    newLayers.add(outputLayer);
-    this.layers = newLayers;
   }
 
   /**
