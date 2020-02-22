@@ -2,15 +2,18 @@ package ranger.notebook;
 
 import java.util.Random;
 
+import ox.Log;
+import ranger.data.LabeledRegressionDatapoint;
 import ranger.data.TrainTestSplit;
 import ranger.data.sets.BullseyeDataset;
 import ranger.data.sets.Dataset;
+import ranger.data.sets.RegressionDataset;
 import ranger.randomforest.RandomForestRegressor;
 
 public class Notebook1 {
 
-  public static final int NUM_EXAMPLES = 60_000;
-  public static final double INPUT_NOISE = 0.03;
+  public static final int NUM_EXAMPLES = 1000;
+  public static final double INPUT_NOISE = 0.005;
   public static final double OUTPUT_NOISE = 0.03;
   public static final double TRAINING_RATIO = 0.95;
   public static final int RANDOM_SEED = 42;
@@ -28,19 +31,26 @@ public class Notebook1 {
   }
 
   public void run() {
-
     experiment1();
+    experiment2();
 
   }
 
   public void experiment1() {
+    Dataset dataset = BullseyeDataset.generateBullseyeDataset(10, 0.005, 0.03, random);
+  }
 
+  public void experiment2() {
     Dataset dataset = BullseyeDataset.generateBullseyeDataset(NUM_EXAMPLES, INPUT_NOISE, OUTPUT_NOISE, random);
     TrainTestSplit split = new TrainTestSplit(dataset).split(TRAINING_RATIO, random);
-    Dataset trainingSet = split.trainingSet;
-    Dataset testSet = split.testSet;
+    RegressionDataset trainingSet = RegressionDataset.fromDataset(split.trainingSet);
+    RegressionDataset testSet = RegressionDataset.fromDataset(split.testSet);
     RandomForestRegressor regressor = new RandomForestRegressor(NUM_TREES, EXAMPLES_PER_TREE, LEAF_SIZE, MAX_DEPTH,
         random).fit(trainingSet);
-    regressor.prettyPrint();
+    for (LabeledRegressionDatapoint ldp : testSet) {
+      double prediction = regressor.predict(ldp.datapoint);
+      double actual = ldp.label;
+      Log.debug("Prediction: %.2f, actual: %.2f", prediction, actual);
+    }
   }
 }

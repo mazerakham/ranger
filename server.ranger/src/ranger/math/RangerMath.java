@@ -52,7 +52,7 @@ public class RangerMath {
     return map(getRandomBagOfLongs(min, max, numResults, r), l -> l.intValue());
   }
 
-  public static Vector gaussianVector(int dimension, double stdDev, Random random) {
+  public static Vector gaussianVector(int dimension, Random random) {
     Vector ret = new Vector();
     for (int i = 0; i < dimension; i++) {
       ret.addEntry(random.nextGaussian());
@@ -63,8 +63,16 @@ public class RangerMath {
   /**
    * Average of a list.
    */
-  public static double average(Collection<Double> numbers) {
+  public static double mean(Collection<Double> numbers) {
     return sum(numbers, n -> n) / numbers.size();
+  }
+
+  /**
+   * Statistical variance.
+   */
+  public static double variance(Collection<Double> numbers) {
+    double mean = mean(numbers);
+    return sum(numbers, n -> Math.pow(n - mean, 2));
   }
 
   public static Vector relu(Vector vector) {

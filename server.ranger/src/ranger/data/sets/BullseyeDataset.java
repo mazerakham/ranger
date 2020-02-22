@@ -30,7 +30,7 @@ public class BullseyeDataset {
     double r = Math.sqrt(random.nextDouble());
     double theta = random.nextDouble() * 2 * Math.PI;
     Vector actualDatapoint = new Vector(r * Math.cos(theta), r * Math.sin(theta));
-    Vector inputNoiseVector = RangerMath.gaussianVector(2, inputNoise, random);
+    Vector inputNoiseVector = RangerMath.gaussianVector(2, random).scale(inputNoise);
     double actualLabel = getOptimalValue(actualDatapoint);
     double outputNoiseSample = random.nextGaussian() * outputNoise;
     return new LabeledDatapoint(actualDatapoint.plus(inputNoiseVector), new Vector(actualLabel + outputNoiseSample));
@@ -48,7 +48,7 @@ public class BullseyeDataset {
     double wB = 1.0 / Math.pow(distB + eps, 5);
     double wC = 1.0 / Math.pow(distC + eps, 5);
 
-    return (-1.0 * wA + 1.0 * wB - 1.0 * wC) / (wA + wB + wC);
+    return wB / (wA + wB + wC);
   }
 
   public static double getLabel(double r) {

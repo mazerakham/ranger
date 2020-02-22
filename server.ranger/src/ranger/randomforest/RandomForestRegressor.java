@@ -1,11 +1,16 @@
 package ranger.randomforest;
 
+import static ox.util.Functions.map;
+
 import java.util.List;
 import java.util.Random;
 
 import com.google.common.collect.Lists;
 
-import ranger.data.sets.Dataset;
+import ox.Json;
+import ox.Log;
+import ranger.data.sets.RegressionDataset;
+import ranger.math.Vector;
 
 public class RandomForestRegressor {
 
@@ -32,16 +37,30 @@ public class RandomForestRegressor {
     this.trees = Lists.newArrayListWithCapacity(numTrees);
   }
 
-  public RandomForestRegressor fit(Dataset dataset) {
+  public RandomForestRegressor fit(RegressionDataset dataset) {
     BootstrapSampler sampler = new BootstrapSampler(dataset, examplesPerTree);
     for (int i = 0; i < numTrees; i++) {
-      Dataset sample = sampler.getSample(random);
+      RegressionDataset sample = sampler.getSample(random);
       DecisionTree decisionTree = new DecisionTree(leafSize, maxDepth).fit(sample);
+      trees.add(decisionTree);
     }
     return this;
   }
 
+  public double predict(Vector v) {
+    double total = 0.0;
+    for (DecisionTree tree : trees) {
+      total += tree.predict(v);
+    }
+    return total / trees.size();
+  }
+
+  public Json toJson() {
+    return Json.array(map(trees, tree -> tree.toJson()));
+  }
+
   public void prettyPrint() {
-    throw new UnsupportedOperationException();
+    Log.debug("Hello world here.");
+    Log.debug(this.toJson().prettyPrint());
   }
 }

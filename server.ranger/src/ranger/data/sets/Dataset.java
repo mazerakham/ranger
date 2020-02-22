@@ -3,7 +3,11 @@ package ranger.data.sets;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Lists;
 
 import ox.Json;
 import ranger.data.LabeledDatapoint;
@@ -27,12 +31,29 @@ public class Dataset {
     return dataset;
   }
 
+  public Dataset() {
+    this(new ArrayList<>());
+  }
+
+  public Dataset(List<LabeledDatapoint> datapoints) {
+    for (LabeledDatapoint datapoint : datapoints) {
+      this.labeledDatapoints.add(datapoint);
+    }
+  }
+
   public void add(LabeledDatapoint datapoint) {
     labeledDatapoints.add(datapoint);
   }
 
   public LabeledDatapoint get(int i) {
     return labeledDatapoints.get(i);
+  }
+
+  public Dataset sortedByIndex(int ix) {
+    List<LabeledDatapoint> sorted = Lists.newArrayList(labeledDatapoints);
+    Collections.sort(sorted,
+        (a, b) -> ComparisonChain.start().compare(a.datapoint.getEntry(ix), b.datapoint.getEntry(ix)).result());
+    return new Dataset(sorted);
   }
 
   public int size() {

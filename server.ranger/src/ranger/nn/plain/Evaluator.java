@@ -17,7 +17,7 @@ public class Evaluator {
       Vector prediction = neuralNetwork.estimate(testDataset.get(i).datapoint);
       errors.add(prediction.distance(testDataset.get(i).label));
     }
-    double averageError = RangerMath.average(errors);
+    double averageError = RangerMath.mean(errors);
     Log.debug("Typical errors:");
     for (int i = 0; i < 5; i++) {
       Log.debug(errors.get(i));
