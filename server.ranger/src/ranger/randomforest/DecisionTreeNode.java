@@ -1,8 +1,10 @@
 package ranger.randomforest;
 
 import static com.google.common.base.Preconditions.checkState;
+import static ox.util.Functions.sum;
 
 import ox.Json;
+import ox.Log;
 import ranger.data.sets.RegressionDataset;
 import ranger.math.Vector;
 
@@ -20,6 +22,8 @@ public class DecisionTreeNode {
   private boolean isLeaf = false;
   private double mean;
 
+  private static double prevMax = 0.0;
+
   public DecisionTreeNode(int leafSize, int maxDepth) {
     this.leafSize = leafSize;
     this.maxDepth = maxDepth;
@@ -28,12 +32,19 @@ public class DecisionTreeNode {
   public DecisionTreeNode fit(RegressionDataset dataset, FastSplitter splitter) {
     checkState(dataset.size() >= leafSize,
         String.format("Cannot make a decision tree node of size %d when leafSize is %d", dataset.size(), leafSize));
+
+    double datasetMean = sum(dataset, ldp -> ldp.label) / dataset.size();
+    if (datasetMean > prevMax) {
+      prevMax = datasetMean + 0.01;
+      Log.debug("dataset of size %d with mean %.2f", dataset.size(), datasetMean);
+    }
+
     if (maxDepth == 0) {
       isLeaf = true;
       fitAsLeaf(dataset);
       return this;
     }
-    splitter.computeOptimalSplit(dataset, leafSize);
+    split = splitter.computeOptimalSplit(dataset, leafSize);
     if (split.isTrivial || split.getLeft(dataset).size() < leafSize || split.getRight(dataset).size() < leafSize) {
       isLeaf = true;
       fitAsLeaf(dataset);

@@ -15,32 +15,43 @@ public class Split {
 
   private final Integer featureIndex;
   public final Double split;
-  public final double totalVariance;
+  public final double cost;
 
   // Trivial Split characteristics.
   public final boolean isTrivial;
   public final Double mean;
 
+  // IllegalSplit
+  public static final Split ILLEGAL_SPLIT = new Split(0.0, 0.0);
+  static {
+    ILLEGAL_SPLIT.illegal = true;
+  }
+  private boolean illegal = false;
+
   public static Split trivialSplit(RegressionDataset dataset) {
     List<Double> numbers = map(dataset, ldp -> ldp.label);
     double mean = RangerMath.mean(numbers);
     double variance = RangerMath.variance(numbers);
-    return new Split(mean, variance);
+    return new Split(mean, variance * dataset.size());
+  }
+
+  public static Split oneHot(RegressionDataset dataset, int featureIndex) {
+    throw new UnsupportedOperationException();
   }
 
   // Trivial split constructor.
-  private Split(double mean, double variance) {
+  private Split(double mean, double cost) {
     this.featureIndex = null;
     this.split = null;
     this.mean = mean;
-    this.totalVariance = variance;
+    this.cost = cost;
     this.isTrivial = true;
   }
 
-  public Split(int featureIndex, double split, double variance) {
+  public Split(int featureIndex, double split, double cost) {
     this.featureIndex = featureIndex;
     this.split = split;
-    this.totalVariance = variance;
+    this.cost = cost;
     this.isTrivial = false;
     this.mean = null;
   }
@@ -49,8 +60,12 @@ public class Split {
     if (that == null) {
       return true;
     } else {
-      return this.totalVariance < that.totalVariance;
+      return this.cost < that.cost;
     }
+  }
+
+  public boolean isLegal() {
+    return !this.illegal;
   }
 
   public boolean isLeft(Vector v) {

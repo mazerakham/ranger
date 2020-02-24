@@ -15,17 +15,17 @@ import ranger.randomforest.RandomForestRegressor;
 
 public class Notebook1 {
 
-  public static final int NUM_EXAMPLES = 1000;
-  public static final double INPUT_NOISE = 0.005;
-  public static final double OUTPUT_NOISE = 0.03;
+  public static final int NUM_EXAMPLES = 10_000;
+  public static final double INPUT_NOISE = 0.0;
+  public static final double OUTPUT_NOISE = 0.05;
   public static final double TRAINING_RATIO = 0.95;
-  public static final int RANDOM_SEED = 42;
+  public static final int RANDOM_SEED = 43;
 
   // Hyperparameters
   public static final int NUM_TREES = 200;
-  public static final int EXAMPLES_PER_TREE = (int) (NUM_EXAMPLES * TRAINING_RATIO); // N;\
-  public static final int LEAF_SIZE = 5;
-  public static final int MAX_DEPTH = 5;
+  public static final int EXAMPLES_PER_TREE = (int) (NUM_EXAMPLES * TRAINING_RATIO); // N
+  public static final int LEAF_SIZE = 4;
+  public static final int MAX_DEPTH = 10;
 
   public final Random random = new Random(RANDOM_SEED);
 
@@ -45,6 +45,10 @@ public class Notebook1 {
     // Took 20 seconds to train 200 trees (leaf size 5, max depth 5) on 950 examples. Root mean squared error was 0.26,
     // and that was with 0.005 input noise and 0.03 output noise (standard deviation).
 
+    // Update: Trained 200 trees on 10_000 examples in only 10 seconds. So a 20x time improvement, thanks to my standard
+    // deviation & mean updating formula. Root-mean-squared error: 0.11. (Max-depth 10, Leaf size 4, input noise 0,
+    // output noise 0.05). Given the output noise, this isn't even that far from Bayes' error!
+
   }
 
   public void experiment1() {
@@ -60,8 +64,9 @@ public class Notebook1 {
     Log.debug("Training a RandomForestRegressor on the bullseye dataset.");
     RandomForestRegressor regressor = new RandomForestRegressor(NUM_TREES, EXAMPLES_PER_TREE, LEAF_SIZE, MAX_DEPTH,
         random).fit(trainingSet);
-    Log.debug("Took %d milliseconds.", watch.elapsed(TimeUnit.MILLISECONDS));
-
+    Log.debug("Random Forest for %d examples took %d milliseconds.", NUM_EXAMPLES,
+        watch.elapsed(TimeUnit.MILLISECONDS));
+    
     int testSetSize = testSet.size();
     double totalSquaredError = 0.0;
     for (LabeledRegressionDatapoint ldp : testSet) {

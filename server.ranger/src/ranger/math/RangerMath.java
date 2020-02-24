@@ -72,7 +72,7 @@ public class RangerMath {
    */
   public static double variance(Collection<Double> numbers) {
     double mean = mean(numbers);
-    return sum(numbers, n -> Math.pow(n - mean, 2));
+    return sum(numbers, n -> Math.pow(n - mean, 2)) / numbers.size();
   }
 
   public static Vector relu(Vector vector) {
