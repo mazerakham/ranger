@@ -1,6 +1,7 @@
 package ranger.randomforest;
 
 import ox.Json;
+import ranger.data.sets.RegressionDataset;
 import ranger.math.Vector;
 
 public class DecisionTree {
@@ -16,8 +17,8 @@ public class DecisionTree {
     this.maxDepth = maxDepth;
   }
 
-  public DecisionTree fit(DecisionTreeRegressionDataset dataset) {
-    this.root = new DecisionTreeNode(leafSize, maxDepth).fit(dataset);
+  public DecisionTree fit(RegressionDataset dataset, FastSplitter splitter) {
+    this.root = new DecisionTreeNode(leafSize, maxDepth).fit(dataset, splitter);
     return this;
   }
 

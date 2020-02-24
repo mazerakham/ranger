@@ -1,18 +1,14 @@
 package ranger.randomforest;
 
+import static ox.util.Functions.filter;
 import static ox.util.Functions.map;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.TreeSet;
-
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Sets;
 
 import ranger.math.RangerMath;
 
 import ox.Json;
-import ranger.data.LabeledRegressionDatapoint;
+import ranger.data.sets.RegressionDataset;
 import ranger.math.Vector;
 
 public class Split {
@@ -25,34 +21,11 @@ public class Split {
   public final boolean isTrivial;
   public final Double mean;
 
-  public static Split trivialSplit(DecisionTreeRegressionDataset dataset) {
+  public static Split trivialSplit(RegressionDataset dataset) {
     List<Double> numbers = map(dataset, ldp -> ldp.label);
     double mean = RangerMath.mean(numbers);
     double variance = RangerMath.variance(numbers);
     return new Split(mean, variance);
-  }
-
-  public static Split atIndex(DecisionTreeRegressionDataset sortedDataset, int datasetIndex, int featureIndex) {
-    double split = (sortedDataset.get(datasetIndex).datapoint.getEntry(featureIndex)
-        + sortedDataset.get(datasetIndex + 1).datapoint.getEntry(featureIndex)) / 2.0;
-    double leftVariance = RangerMath.variance(map(sortedDataset.subList(0, datasetIndex), ldp -> ldp.label));
-    double rightVariance = RangerMath.variance(map(sortedDataset.subList(datasetIndex, sortedDataset.size()), ldp -> ldp.label));
-    return new Split(featureIndex, split, leftVariance + rightVariance);
-  }
-
-  /**
-   * Compute the lowest-variance legal split. Legal meaning, neither side is smaller than {@code leafSize}.
-   */
-  public static Split computeOptimalSplit(DecisionTreeRegressionDataset dataset, int leafSize) {
-    int numFeatures = dataset.numFeatures;
-    Split ret = null;
-    for (int featureIndex = 0; featureIndex < numFeatures; featureIndex++) {
-      Split candidate = computeOptimalSplit(dataset, leafSize, featureIndex);
-      if (candidate.isBetterThan(ret)) {
-        ret = candidate;
-      }
-    }
-    return ret;
   }
 
   // Trivial split constructor.
@@ -85,20 +58,12 @@ public class Split {
     return featureVal < split;
   }
 
+  public RegressionDataset getLeft(RegressionDataset dataset) {
+    return new RegressionDataset(filter(dataset, ldp -> ldp.datapoint.getEntry(featureIndex) < split));
+  }
 
-  private static Split computeOptimalSplit(DecisionTreeRegressionDataset dataset, int leafSize, int featureIndex) {
-    TreeSet<LabeledRegressionDatapoint> thingy = Sets.newTreeSet(dataset);
-    DecisionTreeRegressionDataset sorted = dataset.clone();
-    Collections.sort(sorted, (a, b) -> ComparisonChain.start()
-        .compare(a.datapoint.getEntry(featureIndex), b.datapoint.getEntry(featureIndex)).result());
-    Split ret = Split.trivialSplit(sorted);
-    for (int i = leafSize; i < sorted.size() - leafSize; i++) {
-      Split candidate = Split.atIndex(sorted, i, featureIndex);
-      if (candidate.isBetterThan(ret)) {
-        ret = candidate;
-      }
-    }
-    return ret;
+  public RegressionDataset getRight(RegressionDataset dataset) {
+    return new RegressionDataset(filter(dataset, ldp -> ldp.datapoint.getEntry(featureIndex) >= split));
   }
 
   public Json toJson() {

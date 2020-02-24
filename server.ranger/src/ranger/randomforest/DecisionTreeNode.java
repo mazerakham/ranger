@@ -3,6 +3,7 @@ package ranger.randomforest;
 import static com.google.common.base.Preconditions.checkState;
 
 import ox.Json;
+import ranger.data.sets.RegressionDataset;
 import ranger.math.Vector;
 
 public class DecisionTreeNode {
@@ -24,7 +25,7 @@ public class DecisionTreeNode {
     this.maxDepth = maxDepth;
   }
 
-  public DecisionTreeNode fit(DecisionTreeRegressionDataset dataset) {
+  public DecisionTreeNode fit(RegressionDataset dataset, FastSplitter splitter) {
     checkState(dataset.size() >= leafSize,
         String.format("Cannot make a decision tree node of size %d when leafSize is %d", dataset.size(), leafSize));
     if (maxDepth == 0) {
@@ -32,14 +33,14 @@ public class DecisionTreeNode {
       fitAsLeaf(dataset);
       return this;
     }
-    split = Split.computeOptimalSplit(dataset, leafSize);
-    if (split.isTrivial || dataset.getLeft(split).size() < leafSize || dataset.getRight(split).size() < leafSize) {
+    splitter.computeOptimalSplit(dataset, leafSize);
+    if (split.isTrivial || split.getLeft(dataset).size() < leafSize || split.getRight(dataset).size() < leafSize) {
       isLeaf = true;
       fitAsLeaf(dataset);
       return this;
     }
-    left = new DecisionTreeNode(leafSize, maxDepth - 1).fit(dataset.getLeft(split));
-    right = new DecisionTreeNode(leafSize, maxDepth - 1).fit(dataset.getRight(split));
+    left = new DecisionTreeNode(leafSize, maxDepth - 1).fit(split.getLeft(dataset), splitter);
+    right = new DecisionTreeNode(leafSize, maxDepth - 1).fit(split.getRight(dataset), splitter);
     return this;
   }
 
@@ -53,7 +54,7 @@ public class DecisionTreeNode {
     }
   }
 
-  private void fitAsLeaf(DecisionTreeRegressionDataset dataset) {
+  private void fitAsLeaf(RegressionDataset dataset) {
     split = Split.trivialSplit(dataset);
     mean = split.mean;
     left = null;

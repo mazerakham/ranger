@@ -38,11 +38,11 @@ public class RandomForestRegressor {
   }
 
   public RandomForestRegressor fit(RegressionDataset dataset) {
-    DecisionTreeRegressionDataset preprocessedDataset = DecisionTreeRegressionDataset.fromDataset(dataset);
-    BootstrapSampler sampler = new BootstrapSampler(preprocessedDataset, examplesPerTree);
+    FastSplitter splitter = new FastSplitter().computeStatistics(dataset);
+    BootstrapSampler sampler = new BootstrapSampler(dataset, examplesPerTree);
     for (int i = 0; i < numTrees; i++) {
-      DecisionTreeRegressionDataset sample = sampler.getSample(random);
-      DecisionTree decisionTree = new DecisionTree(leafSize, maxDepth).fit(sample);
+      RegressionDataset sample = sampler.getSample(random);
+      DecisionTree decisionTree = new DecisionTree(leafSize, maxDepth).fit(sample, splitter);
       trees.add(decisionTree);
     }
     return this;
