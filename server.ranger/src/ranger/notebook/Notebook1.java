@@ -1,6 +1,9 @@
 package ranger.notebook;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
+import com.google.common.base.Stopwatch;
 
 import ox.Log;
 import ranger.data.LabeledRegressionDatapoint;
@@ -31,8 +34,16 @@ public class Notebook1 {
   }
 
   public void run() {
+
+    // Just making sure we're making a reasonable dataset.
     experiment1();
+    // Results: we found a bug in the dataset generation. Namely, we were using input noise with standard deviation 1;
+    // it was ignoring the standard deviation argument!
+
+    // Train a RandomForestRegressor on the bullseye data with a little noise.
     experiment2();
+    // Took 20 seconds to train 200 trees (leaf size 5, max depth 5) on 950 examples. Root mean squared error was 0.26,
+    // and that was with 0.005 input noise and 0.03 output noise (standard deviation).
 
   }
 
@@ -45,12 +56,20 @@ public class Notebook1 {
     TrainTestSplit split = new TrainTestSplit(dataset).split(TRAINING_RATIO, random);
     RegressionDataset trainingSet = RegressionDataset.fromDataset(split.trainingSet);
     RegressionDataset testSet = RegressionDataset.fromDataset(split.testSet);
+    Stopwatch watch = Stopwatch.createStarted();
+    Log.debug("Training a RandomForestRegressor on the bullseye dataset.");
     RandomForestRegressor regressor = new RandomForestRegressor(NUM_TREES, EXAMPLES_PER_TREE, LEAF_SIZE, MAX_DEPTH,
         random).fit(trainingSet);
+    Log.debug("Took %d milliseconds.", watch.elapsed(TimeUnit.MILLISECONDS));
+
+    int testSetSize = testSet.size();
+    double totalSquaredError = 0.0;
     for (LabeledRegressionDatapoint ldp : testSet) {
       double prediction = regressor.predict(ldp.datapoint);
       double actual = ldp.label;
+      totalSquaredError += Math.pow(prediction - actual, 2);
       Log.debug("Prediction: %.2f, actual: %.2f", prediction, actual);
     }
+    Log.debug("Root Mean Squared Error: %.2f", Math.sqrt(totalSquaredError / testSetSize));
   }
 }
