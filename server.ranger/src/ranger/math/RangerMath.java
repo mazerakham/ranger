@@ -57,7 +57,7 @@ public class RangerMath {
     for (int i = 0; i < dimension; i++) {
       ret.addEntry(random.nextGaussian());
     }
-    return ret.scale(1.0 / Math.sqrt(dimension));
+    return ret.scale(stdDev / Math.sqrt(dimension));
   }
 
   /**
